@@ -1,0 +1,11 @@
+:host {
+  display: block;
+}
+
+
+.active {
+  color: #ffff;
+  border-left: #7b52ab solid 3.5px;
+  background: #2B3746;
+  transform: scale(1.005);
+}
