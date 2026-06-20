@@ -18,7 +18,7 @@ variables:
 
 stages:
   - stage: CI
-    displayName: Build Angular UI
+    displayName: Build & Test Angular UI
     jobs:
       - job: angular
         displayName: Angular UI
@@ -36,3 +36,8 @@ stages:
 
           - script: pnpm run build
             displayName: Build (producción)
+
+          - script: pnpm test
+            displayName: Unit tests (Vitest)
+            env:
+              CI: 'true'
