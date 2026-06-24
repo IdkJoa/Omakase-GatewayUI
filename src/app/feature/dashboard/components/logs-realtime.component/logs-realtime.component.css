@@ -1,0 +1,15 @@
+:host {
+  display: block;
+}
+
+:host ::ng-deep .custom-scrollbar .p-scrollpanel-bar {
+  background-color: #2F2B43;
+  opacity: 1;
+  border-radius: 4px;
+  width: 6px;
+}
+
+:host ::ng-deep .custom-scrollbar .p-scrollpanel-bar:hover {
+  background-color: #9D72FF;
+  /* Tu violeta de acento al pasar el mouse */
+}

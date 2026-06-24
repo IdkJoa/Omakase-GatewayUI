@@ -1,0 +1,20 @@
+<div class="flex gap-2">
+  <p-table [value]="logs()" stripedRows [tableStyle]="{'width': '25rem'}">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Source Ip</th>
+        <th>Verdict</th>
+        <th>Username</th>
+        <th>Service Name</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-logs>
+      <tr class="text-[0.97rem]">
+        <td>{{ logs.sourceIp }}</td>
+        <td><span [class]="getVerdictStyle(logs.verdict)">{{ logs.verdict }}</span></td>
+        <td>{{ logs.username }}</td>
+        <td>{{ logs.serviceName }}</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

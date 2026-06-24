@@ -1,0 +1,34 @@
+:host {
+  display: block;
+}
+
+
+/* Limpia el fondo de la tabla y la cabecera */
+:host ::ng-deep .p-datatable .p-datatable-thead>tr>th {
+  background-color: #1A1726 !important;
+  color: #9A96A8 !important;
+  border-color: #2F2B43 !important;
+  border-width: 0 0 1px 0 !important;
+  /* Solo borde inferior */
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 0.65rem;
+}
+
+/* Estilos de las filas y datos */
+:host ::ng-deep .p-datatable .p-datatable-tbody>tr {
+  background-color: #1A1726 !important;
+  color: #F3F3F6 !important;
+  transition: background-color 0.2s;
+}
+
+/* Borde inferior suave para las celdas */
+:host ::ng-deep .p-datatable .p-datatable-tbody>tr>td {
+  border-color: rgba(47, 43, 67, 0.5) !important;
+  border-width: 0 0 1px 0 !important;
+}
+
+/* Hover de la fila */
+:host ::ng-deep .p-datatable .p-datatable-tbody>tr:hover {
+  background-color: #232032 !important;
+}
