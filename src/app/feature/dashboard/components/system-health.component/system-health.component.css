@@ -1,0 +1,10 @@
+:host {
+  display: block;
+}
+
+:host ::ng-deep .p-knob:focus,
+:host ::ng-deep .p-knob svg:focus,
+:host ::ng-deep .p-knob.p-focus {
+  outline: none !important;
+  box-shadow: none !important;
+}

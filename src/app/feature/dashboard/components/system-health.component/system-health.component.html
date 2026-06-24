@@ -1,0 +1,93 @@
+<main class="flex justify-between items-center gap-20  ">
+  <section
+    class="flex flex-col gap-2 w-75 bg-[#1A1726] hover:bg-[#232032b9] border border-[#2F2B43] rounded-lg p-4 pt-2">
+    <div class="flex justify-between items-center mb-4">
+      <h1 class="text-sm text-gray-300 font-semibold opacity-70">Traffic Disposition</h1>
+      <i class="fa-solid fa-shield-halved text-[#f5bd04]"></i>
+    </div>
+
+    <div class="flex flex-col gap-2 mb-1">
+      <div class="flex justify-between text-xs mb-1 items-center">
+        <span class="text-[#9A96A8] opacity-90">Allowed Traffic</span>
+
+        <span class="text-[#10B981] font-bold">{{metrics().allowedPercent}}%</span>
+      </div>
+
+      <div class="w-full rounded-full bg-gray-800 h-2">
+        <div
+          class="w-full rounded-full bg-gradient-to-r from-emerald-400 via-emerald-500 to-green-600 shadow-[0_0_10px_rgba(16,185,129,0.3)] h-2"
+          [style.width.%]="metrics().allowedPercent"></div>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-2 mb-1">
+      <div class="flex justify-between text-xs mb-1 items-center">
+        <span class="text-[#9A96A8] opacity-90">Challenged (MFA)</span>
+
+        <span class="text-[#b95310] font-bold">{{metrics().challengedPercent}}%</span>
+      </div>
+
+      <div class="w-full rounded-full bg-gray-800 h-2">
+        <div
+          class="w-full rounded-full bg-gradient-to-r from-amber-400 via-orange-400 to-orange-500 shadow-[0_0_10px_rgba(245,158,11,0.3)] h-2"
+          [style.width.%]="metrics().challengedPercent"></div>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-2 mb-1">
+      <div class="flex justify-between text-xs mb-1 items-center">
+        <span class="text-[#9A96A8] opacity-90">Blocked Threats</span>
+
+        <span class="text-[#b92910] font-bold">{{metrics().blockedPercent}}%</span>
+      </div>
+
+      <div class="w-full rounded-full bg-gray-800 h-2">
+        <div
+          class="w-full rounded-full bg-gradient-to-r from-rose-400 via-red-500 to-red-600 shadow-[0_0_10px_rgba(239,68,68,0.3)] h-2"
+          [style.width.%]="metrics().blockedPercent"></div>
+      </div>
+    </div>
+  </section>
+
+  <section
+    class="flex flex-col w-60 gap-2 bg-[#1A1726] hover:bg-[#232032b9] border border-[#2F2B43] rounded-lg p-5 pt-2">
+    <div class="flex justify-between items-center mb-1.5">
+      <h1 class="text-sm text-gray-300 font-semibold opacity-70">Global Risk Score</h1>
+      <i class="fa-solid fa-skull-crossbones text-[#e11717ab]"></i>
+    </div>
+    <div class="flex flex-col items-center justify-center">
+      <p-knob [ngModel]="metrics().averageRiskScore" [readonly]="true" [max]="100" [size]="128"
+        [valueColor]="getRiskColor()" rangeColor="#110f18" textColor="#a49d9db3">
+      </p-knob>
+      <span class=" text-xs font-semi-bold text-[#a49d9db3]">{{getRiskLabel()}}</span>
+    </div>
+  </section>
+
+  <section
+    class="flex flex-col w-130 gap-2 bg-[#1A1726] hover:bg-[#232032b9] border border-[#2F2B43] rounded-lg p-5 pt-2">
+    <div class="flex justify-between items-center mb-6">
+      <div class="flex w-full justify-between items-center gap-2 p-2 pl-6 pr-6">
+        <h3 class="text-[#F3F3F6] font-semibold text-sm">Global Traffic Analytics
+          <span class="text-[9px] text-gray-400 opacity-70 font-semibold">(Last 24 hours)</span>
+        </h3>
+
+      </div>
+    </div>
+
+    <div class="relative w-full h-27.5">
+      <p-chart type="bar" [data]="chartData" [options]="chartOptions" height="110px"></p-chart>
+    </div>
+  </section>
+
+</main>
+
+<svg style="width: 0; height: 0; position: absolute;" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="fullRiskGrad" x1="15" y1="0" x2="85" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#3B82F6" />
+      <stop offset="30%" stop-color="#0451a2" />
+      <stop offset="65%" stop-color="#F59E0B" />
+      <stop offset="100%" stop-color="#EF4444" />
+    </linearGradient>
+  </defs>
+</svg>
