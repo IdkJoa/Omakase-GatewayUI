@@ -1,7 +1,7 @@
 <p-toast />
 
-<div class="flex items-center justify-between pt-6 mt-6 pl-6 ml-6">
-  <h1 class="text-6xl font-bold opacity-80">Network Summary</h1>
+<div class="flex items-center justify-between pt-6  pl-6 ml-6">
+  <h1 class="text-5xl font-bold opacity-80">Network Summary</h1>
 </div>
 <p class="text-muted-color mt-0 opacity-90 text-gray-400 pl-6 ml-6">Real-time status of global zero trust infrastructure
 </p>
@@ -9,19 +9,13 @@
 <!-- <p-tag value="{{totalRecords()}} Registrados" class="mr-4"/> -->
 
 <div class="flex flex-col justify-center items-center  mt-6">
-  @if(metrics() !== null){
-  <app-system-health [metrics]="metrics()!" />
-  }
+  <app-system-health [metrics]="metrics()" [logs]="logs()" />
 
-  <section class="flex justify-center items-center pr-10  mt-10 w-9/12 ">
-    <div class="grid grid-cols-[2fr_1fr] gap-2 ml-10">
+  <section class="flex justify-center items-center  mt-10 w-full ">
+    <div class="flex flex-col gap-2 ml-10 w-full">
 
-      <div class="mr-12">
+      <div class="mr-11 ">
         <app-logs-realtime [logs]="logsLive()" />
-      </div>
-
-      <div class="ml-12">
-        <app-table-log [logs]="logs()" />
       </div>
 
     </div>

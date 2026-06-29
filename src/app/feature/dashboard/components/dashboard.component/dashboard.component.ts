@@ -6,14 +6,13 @@ import { DashboardService } from '../../services/dashboard.services';
 import { Metrics } from '../../interfaces/dashboard.interface';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { TableLogComponent } from "../table_log.component/table_log.component";
 import { LogsService } from '../../../audit forense/services/logs.services';
 import { Logs_Data } from '../../../audit forense/interface/logs.interfaces';
 import { LogsRealtimeComponent } from "../logs-realtime.component/logs-realtime.component";
-
+import { paramsGrid } from '../../../../shared/layout/interfaces/ParamsGrid';
 @Component({
   selector: 'app-dashboard.component',
-  imports: [Divider, SystemHealthComponent, ToastModule, TableLogComponent, LogsRealtimeComponent],
+  imports: [Divider, SystemHealthComponent, ToastModule,  LogsRealtimeComponent],
   providers: [ConfirmationService, MessageService],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
@@ -39,11 +38,13 @@ export class DashboardComponent implements OnInit {
   }
 
   getLogsMetrics() {
-    const params: Record<string, string | readonly string[]> = {
+    const now = new Date();
+      const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    const params: paramsGrid = {
       page: "1",
       pageSize: "5",
-      from: "2026-06-24 00:00:00",
-      to: "2026-06-30 00:00:00"
+      to: now.toISOString(),
+      from: twentyFourHoursAgo.toISOString(),
     }
 
     return this.logsServices.getLogs(params).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
@@ -57,11 +58,9 @@ export class DashboardComponent implements OnInit {
   }
 
   getLogs() {
-    const params: Record<string, string | readonly string[]> = {
+    const params: paramsGrid = {
       page: "1",
       pageSize: "5",
-      from: "2026-06-24 00:00:00",
-      to: "2026-06-30 00:00:00"
     }
 
     return this.logsServices.getLogs(params).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({

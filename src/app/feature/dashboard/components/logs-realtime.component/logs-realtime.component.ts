@@ -40,9 +40,9 @@ export class LogsRealtimeComponent {
     });
   }
 
-  private getVerdictColor(verdict: string): string {
+  private getVerdictColor(verdict: string): string { //hacer funcion compartida
     switch (verdict.toUpperCase()) {
-      case 'ALLOw':
+      case 'ALLOW':
         return 'bg-[#10B981]/20 text-[#10B981] border-[#10B981]/30';
       case 'BLOCK':
         return 'bg-[#EF4444]/20 text-[#EF4444] border-[#EF4444]/30';

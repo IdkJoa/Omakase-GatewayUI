@@ -1,0 +1,128 @@
+<!-- Componente filtro -->
+<div class="flex flex-col lg:flex-row gap-4 mb-4 justify-between items-center">
+  <div class="flex gap-8 items-center">
+    <p-select
+      [options]="verdictOptions"
+      [(ngModel)]="selectedVerdict"
+      (ngModelChange)="onFilterChange()"
+      optionValue="value"
+      placeholder="Veredicto"
+      class="w-40 h-9 bg-[#1A1726] border-[#2F2B43] text-xs text-[#9A96A8]"
+    >
+    </p-select>
+
+    <p-datepicker
+      [(ngModel)]="selecetedDateRange"
+      (ngModelChange)="onFilterChange()"
+      selectionMode="range"
+      readonlyInput="true"
+      placeholder="Rango de fechas"
+      class="bg-[#1a1726] border-[#2f2b43] text-xs h-9"
+    >
+    </p-datepicker>
+
+    <p-iconfield iconPosition="left">
+      <p-inputicon class="pi pi-search text-[#9a96a8]" />
+      <input
+        type="text"
+        pInputText
+        [(ngModel)]="globalSearch"
+        (keyup.enter)="onFilterChange()"
+        placeholder="Buscar por ip... (Enter para buscar)"
+        class="w-73 bg-[#1a1726] border border-[#2f2b43] rounded-md pl-9 pr-4 py-2 text-xs text-[#F3F3F6] focus:border-[#9D72FF] outline-none"
+      />
+    </p-iconfield>
+
+    <div class="relative flex-1 max-w-md ml-auto">
+      <p-iconfield iconPosition="left">
+        <p-inputicon class="pi pi-search text-[#9a96a8]" />
+        <input
+          type="text"
+          pInputText
+          [(ngModel)]="globalSearch"
+          (keyup.enter)="onFilterChange()"
+          placeholder="Buscar por servicio... (Enter para buscar)"
+          class="w-85 bg-[#1a1726] border border-[#2f2b43] rounded-md pl-9 pr-4 py-2 text-xs text-[#F3F3F6] focus:border-[#9D72FF] outline-none"
+        />
+      </p-iconfield>
+    </div>
+
+    <p-button icon="pi pi-filter-slash" (onClick)="limpiarFiltros()" class="p-button-text">
+    </p-button>
+  </div>
+</div>
+
+<!--Componente tabla -->
+<div class="bg-[#1A1726] border border-[#2F2B43] rounded-md w-full overflow-hidden shadow-xl">
+  <p-table
+    [value]="data()"
+    [paginator]="true"
+    [lazy]="true"
+    (onLazyLoad)="onTableLazyLoad($event)"
+    [totalRecords]="totalRecords()"
+    [loading]="loading()"
+    class="p-datatable-custom"
+    paginatorDropdownAppendTo="body"
+    [rowsPerPageOptions]="[5, 10, 20, 50]"
+    [rows]="20"
+    currentPageReportTemplate="Mostrando {first}-{last} de {{ totalRecords() }} registros"
+    [showCurrentPageReport]="true"
+  >
+    <ng-template pTemplate="header">
+      <tr class="text-[10px] tracking-widest text-[#9A96A8] uppercase">
+        @for (col of columns(); track col.field) {
+          <th [style.width]="getColumnWidth(col.field)" class="relative overflow-visible">
+            <div class="flex items-center gap-1.5 justify-between">
+              <span class="truncate">{{ col.name }}</span>
+            </div>
+          </th>
+        }
+        <th style="width: 5%" class="text-center relative overflow-visible">
+          <div class="flex items-center gap-1.5 justify-between">
+            <span class="truncate">DETAILS</span>
+          </div>
+        </th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-log>
+      <tr class="hover:bg-[#232032] transition-colors border-b border-[#2F2B43]/50 text-xs">
+        <td class="font-mono text-[11px] text-[#9a96a8] pl-6 py-4">
+          {{ log.timestamp | date: 'fullDate' }}
+        </td>
+        <td class="py-4">
+          <span class="text-xs font-mono text-gray-400">{{ log.sourceIp }}</span>
+        </td>
+        <td class="py-4">
+          {{ log.serviceName }}
+          <span class="text-[10px] text-[#9a96a8] tracking-tight"> Endpoint Cluster</span>
+        </td>
+        <td class="py-4 font-bold tracking-wide">
+          <span [class]="getVerdictColor(log.verdict)">{{ log.verdict }}</span>
+        </td>
+        <td class="py-4 font-bold" [class]="getRiskColor(log.riskScore)">
+          {{ log.riskScore }}
+        </td>
+        <td class="py-4 text-center">
+          <button
+            class="p-2 hover:bg-[#2F2B43] rounded-md text-[#9A96A8] hover:text-[#9D72FF] transition"
+            (click)="abrirDetalles(log)"
+          >
+            <i class="pi pi-arrow-right"></i>
+          </button>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="6" class="text-center h-20 py-8 text-[#9A96A8] italic text-xs">
+          No matching logs found for the selected criteria.
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<!-- Componente panel -->
+<app-panel [logSelected]="logSelected()" [(drawerVisible)]="drawerVisible" (panelClosed)="onPanelClosed()"/>
+
