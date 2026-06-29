@@ -1,0 +1,128 @@
+<p-drawer
+  [visible]="drawerVisible()"
+  (onHide)="cerrarDetalles()"
+  (visibleChange)="onVisebleChange($event)"
+  position="right"
+  [showCloseIcon]="false"
+  class="w-137.5 bg-[#110F18] border-l border-[#2F2B43]"
+>
+  <ng-template pTemplate="header">
+    <div class="flex justify-between items-center w-full">
+      <div>
+        <h2 class="text-xl font-bold text-[#f3f3f6] tracking-tight">Análisis Forense</h2>
+        <p class="text-xs text-[#9a96a8] mt-1 font-mono">
+          {{ logSelected()?.timestamp | date: 'fullDate' }}
+        </p>
+      </div>
+      <button
+        (click)="cerrarDetalles()"
+        class="cursor-pointer text-[#9a96a8] hover:text-[#ef4444] p-2 rounded-md hover:bg-[#ef4444]/10 transition-colors"
+      >
+        <i class="pi pi-times text-lg"></i>
+      </button>
+    </div>
+  </ng-template>
+
+  @if (logSelected(); as log) {
+    <div class="flex flex-col gap-6 mt-2 text-[#f3f3f6]">
+      <div
+        class="p-5 rounded-lg border flex items-center justify-between"
+        [class]="getVerdictColor(log.verdict || '')"
+      >
+        <div class="flex items-center gap-4">
+          <i class="pi pi-shield text-3xl opacity-70"></i>
+          <div>
+            <p class="text-[10px] uppercase tracking-widest font-bold opacity-60">
+              Gateway Verdict
+            </p>
+            <p class="text-2xl font-black tracking-wide">{{ log.verdict }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-3 gap-3">
+        <div
+          class="bg-[#1a1726] border border-[#2f2b43] p-4 rounded-lg flex flex-col items-center justify-center gap-1"
+        >
+          <span class="text-[10px] text-[#9A96A8] uppercase tracking-wider font-semibold"
+            >Risk Score</span
+          >
+          <span class="text-3xl font-bold" [class]="getRiskColor(log.riskScore || 0)">
+            {{ log.riskScore || '0' }}
+          </span>
+        </div>
+
+        <div
+          class="bg-[#1a1726] border border-[#2f2b43] p-4 rounded-lg flex flex-col items-center justify-center gap-1"
+        >
+          <span class="text-[10px] text-[#9A96A8] uppercase tracking-wider font-semibold"
+            >Anomaly</span
+          >
+          <span class="text-3xl font-bold text-[#f59e0b]">{{ log.anomalyScore || 'N/A' }}</span>
+        </div>
+
+        <div
+          class="bg-[#1a1726] border border-[#2f2b43] p-4 rounded-lg flex flex-col items-center justify-center gap-1"
+        >
+          <span class="text-[10px] text-[#9A96A8] uppercase tracking-wider font-semibold"
+            >Policy</span
+          >
+          <span class="text-3xl font-bold text-[#9D72FF]">{{ log.policyScore || 'N/A' }}</span>
+        </div>
+      </div>
+      <div class="bg-[#1A1726] border border-[#2F2B43] rounded-lg p-5">
+        <h3
+          class="text-[11px] text-[#9A96A8] uppercase tracking-widest font-bold mb-4 border-b border-[#2F2B43] pb-2"
+        >
+          Identity & Network Context
+        </h3>
+
+        <div class="flex flex-col gap-4">
+          <div class="flex justify-between items-center">
+            <span class="text-xs text-[#9A96A8]">Usuario:</span>
+            <span class="text-xs font-semibold text-[#F3F3F6] bg-[#2F2B43] px-2 py-1 rounded">
+              {{ log.username || 'Anónimo' }}
+            </span>
+          </div>
+
+          <div class="flex justify-between items-center">
+            <span class="text-xs text-[#9A96A8]">Source IP:</span>
+            <span
+              class="text-xs font-mono text-[#9D72FF] bg-[#9D72FF]/10 border border-[#9D72FF]/20 px-2 py-1 rounded"
+            >
+              {{ log.sourceIp }}
+            </span>
+          </div>
+
+          <div class="flex justify-between items-center">
+            <span class="text-xs text-[#9A96A8]">Servicio Destino:</span>
+            <span class="text-xs font-semibold text-[#F3F3F6]">
+              {{ log.serviceName }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-[#1A1726] border border-[#2F2B43] rounded-lg p-5">
+        <h3
+          class="text-[11px] text-[#9A96A8] uppercase tracking-widest font-bold mb-4 border-b border-[#2F2B43] pb-2"
+        >
+          Reglas Disparadas
+        </h3>
+        <div class="flex flex-wrap gap-2">
+          @if (log.triggeredRules && log.triggeredRules.length > 0) {
+            @for (rule of log.triggeredRules; track rule) {
+              <span
+                class="px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wide border bg-[#232032] border-[#423D57] text-[#D1CDDF]"
+              >
+                {{ rule }}
+              </span>
+            }
+          } @else {
+            <span class="text-xs text-gray-500 italic">No se ha disparado ninguna regla</span>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</p-drawer>

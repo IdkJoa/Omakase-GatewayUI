@@ -4,14 +4,16 @@ import { environment } from '../../../../environments/environment.development';
 import { Observable } from 'rxjs';
 import { Logs } from '../interface/logs.interfaces';
 
+import { paramsGrid } from '../../../shared/layout/interfaces/ParamsGrid';
+
 @Injectable({ providedIn: 'root' })
 export class LogsService {
   private http = inject(HttpClient);
   private baseUrl = `${environment.API_URL}/logs`;
 
-  getLogs(params?: Record<string, string | readonly string[]>): Observable<Logs> {
+  getLogs(params?: paramsGrid): Observable<Logs> {
     return this.http.get<Logs>(this.baseUrl,
-      { params: params = {} }
+      { params: params ?? undefined }
     );
   }
 

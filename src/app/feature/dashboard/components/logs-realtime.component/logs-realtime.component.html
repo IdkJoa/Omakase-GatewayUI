@@ -1,4 +1,4 @@
-<section class="flex flex-col bg-[#1A1726] border border-[#2F2B43] rounded-lg overflow-hidden w-full h-full ">
+<section class="flex flex-col bg-[#1A1726] border border-[#2F2B43] rounded-lg overflow-hidden w-full h-75 ">
 
   <div class="p-4 border-b border-[#2F2B43] bg-[#1A1726] z-10">
     <h3 class="text-[#f3f3f6a7] font-semibold mt-0.5">Live Decision Logs</h3>
@@ -24,6 +24,10 @@
 
           <span class="text-[#F3F3F6] break-all sm:break-normal">
             {{ log.serviceName }}
+          </span>
+
+          <span class="text-[#F3F3F6] break-all sm:break-normal">
+            {{ log.sourceIp }}
           </span>
 
         </div>
