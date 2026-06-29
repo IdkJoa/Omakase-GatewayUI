@@ -1,1 +1,12 @@
-<p>audit-forense.component works!</p>,
+<p-toast />
+
+<div class="flex items-center justify-between pt-6  pl-6 ml-6">
+  <h1 class="text-5xl font-bold opacity-80">Audit Forense</h1>
+</div>
+<p class="text-muted-color mt-2.5 opacity-90 text-gray-400 pl-6 ml-6"> Explorador de logs de auditoría · cada evaluación del Gateway</p>
+<p-divider class="bg-[#252233]! mb-6"></p-divider>
+
+<div class="flex justify-center items-center w-full h-full mt-6 pl-10 pr-10">
+  <app-datagrid class="w-full min-h-50" [columns]="columns" [filter]="filter_logs" (paramsGrid)="OnParamsGrid($event)"
+    [data]="logs()" [totalRecords]="totalRecord()" [loading]="loading()" />
+</div>
