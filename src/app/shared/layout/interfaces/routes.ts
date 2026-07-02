@@ -15,6 +15,11 @@ export const routes = [
     icon: "pi pi-list"
   },
   {
+    path: "roles",
+    title: "Roles",
+    icon: "pi pi-crown"
+  },
+  {
     path: "profile-devices",
     title: "Profile Devices",
     icon: "pi pi-user"
@@ -24,4 +29,5 @@ export const routes = [
     title: "Services Inventory",
     icon: "pi pi-warehouse"
   },
+
 ]

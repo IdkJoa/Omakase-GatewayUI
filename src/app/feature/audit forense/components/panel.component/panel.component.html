@@ -90,14 +90,14 @@
             <span
               class="text-xs font-mono text-[#9D72FF] bg-[#9D72FF]/10 border border-[#9D72FF]/20 px-2 py-1 rounded"
             >
-              {{ log.sourceIp }}
+              {{ log.sourceIp  || "N/A"}}
             </span>
           </div>
 
           <div class="flex justify-between items-center">
             <span class="text-xs text-[#9A96A8]">Servicio Destino:</span>
             <span class="text-xs font-semibold text-[#F3F3F6]">
-              {{ log.serviceName }}
+              {{ log.serviceName || "N/A" }}
             </span>
           </div>
         </div>

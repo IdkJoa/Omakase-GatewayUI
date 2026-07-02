@@ -32,6 +32,10 @@ export const LayoutRoutes: Routes = [
           .then(m => m.ServicesInventoryComponent)
       },
       {
+        path: "roles",
+        loadComponent: () => import('../../feature/roles/component/roles.component/roles.component').then(m => m.RolesComponent)
+      },
+      {
         path: "**",
         redirectTo: "dashboard"
       }

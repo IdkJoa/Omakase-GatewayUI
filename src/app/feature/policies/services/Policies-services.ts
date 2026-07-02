@@ -10,7 +10,7 @@ export class PoliciesService {
   private http = inject(HttpClient);
   private baseUrl = `${environment.API_URL}/policies`;
 
-  LoadPolicies(params: paramsGrid): Observable<PoliciesResponse> {
+  LoadPolicies(params?: paramsGrid): Observable<PoliciesResponse> {
     return this.http.get<PoliciesResponse>(this.baseUrl, { params: params ?? undefined });
   }
 

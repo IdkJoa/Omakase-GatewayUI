@@ -8,4 +8,3 @@ export const logs_Columns: Column[] = [
   { name: "Risk Score", field: "riskScore", type: "string[]" },
 ];
 
-export const filter_logs: string[] = ["timestamp", "sourceIp", "serviceName", "verdict", "triggeredRules"];

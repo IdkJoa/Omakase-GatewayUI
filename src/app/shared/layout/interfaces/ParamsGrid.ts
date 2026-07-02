@@ -7,4 +7,6 @@ export type paramsGrid = Record<string, string | number | boolean | readonly str
   serviceName?: string;
   from?: string;
   to?: string;
+  type?: string;
+  isActive?: boolean;
 }
