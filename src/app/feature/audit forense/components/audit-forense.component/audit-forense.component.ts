@@ -18,14 +18,14 @@ import { logs_Columns } from '../../data/logs.data';
   styleUrl: './audit-forense.component.css',
 })
 export class AuditForenseComponent implements OnInit {
-  private servicesLogs = inject(LogsService);
-  private destroyRef = inject(DestroyRef);
-  private msg = inject(MessageService);
-  logs = signal<Logs_Data[]>([]);
-  totalRecord = signal<number>(0);
-  loading = signal<boolean>(true);
-  params = signal<paramsGrid | null | undefined>(undefined);
-  columns: Column[] = logs_Columns;
+  private readonly servicesLogs = inject(LogsService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly msg = inject(MessageService);
+  public readonly logs = signal<Logs_Data[]>([]);
+  public readonly totalRecord = signal<number>(0);
+  public readonly loading = signal<boolean>(true);
+  public readonly params = signal<paramsGrid | null | undefined>(undefined);
+  public readonly columns: Column[] = logs_Columns;
 
   OnParamsGrid(params: paramsGrid | null | undefined): void {
     this.params.set(params);

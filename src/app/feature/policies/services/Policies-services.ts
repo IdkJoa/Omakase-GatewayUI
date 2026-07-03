@@ -7,8 +7,8 @@ import { Policies, PoliciesAction, PoliciesResponse } from '../interfaces/polici
 
 @Injectable({ providedIn: 'root' })
 export class PoliciesService {
-  private http = inject(HttpClient);
-  private baseUrl = `${environment.API_URL}/policies`;
+  private readonly http = inject(HttpClient);
+  private readonly baseUrl = `${environment.API_URL}/policies`;
 
   LoadPolicies(params?: paramsGrid): Observable<PoliciesResponse> {
     return this.http.get<PoliciesResponse>(this.baseUrl, { params: params ?? undefined });

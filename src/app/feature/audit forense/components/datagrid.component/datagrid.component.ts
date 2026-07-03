@@ -35,29 +35,29 @@ import { PanelComponent } from '../panel.component/panel.component';
   styleUrls: ['./datagrid.component.css'],
 })
 export class DatagridComponent {
-  data = input.required<Logs_Data[]>();
-  totalRecords = input.required<number>();
-  loading = input.required<boolean>();
+  public readonly data = input.required<Logs_Data[]>();
+  public readonly totalRecords = input.required<number>();
+  public readonly loading = input.required<boolean>();
   public paramsGrid = output<paramsGrid>();
-  columns = input.required<Column[]>();
+  public readonly columns = input.required<Column[]>();
   private currentPage = 1;
   private currentLimit = 20;
 
   //Estados para filtros
-  public selectedVerdict = signal<string | null>(null);
-  public selecetedDateRange = signal<Date[] | null>(null);
-  public globalSearch = signal<string>('');
-  public selectedIp = signal<string>('');
+  public readonly selectedVerdict = signal<string | null>(null);
+  public readonly selecetedDateRange = signal<Date[] | null>(null);
+  public readonly globalSearch = signal<string>('');
+  public readonly selectedIp = signal<string>('');
 
-  public verdictOptions = [
+  public readonly verdictOptions = [
     { label: 'ALL', value: null },
     { label: 'ALLOW', value: 'ALLOW' },
     { label: 'BLOCK', value: 'BLOCK' },
     { label: 'CHALLENGE', value: 'CHALLENGE' },
   ];
 
-  public drawerVisible = signal<boolean>(false);
-  public logSelected = signal<Logs_Data | null>(null);
+  public readonly drawerVisible = signal<boolean>(false);
+  public readonly logSelected = signal<Logs_Data | null>(null);
 
   getColumnWidth = getColumnWidth;
   getVerdictColor = getVerdictColor;

@@ -1,3 +1,5 @@
+import { Policies } from '../../feature/policies/interfaces/policies.interface';
+
 export function getVerdictColor(verdict: string): string {
   switch (verdict.toUpperCase()) {
     case 'ALLOW':
@@ -31,5 +33,21 @@ export function getColumnWidth(field: string): string {
       return '18%';
     default:
       return 'auto';
+  }
+}
+
+export function getConditionText(policy: Policies): string {
+  const cfg = policy.config;
+  switch (policy.type) {
+    case 'Geofence':
+      return `Countries: ${cfg.allowedCountries?.join(', ')}`;
+    case 'TimeWindow':
+      return `${cfg.startHour}:00 - ${cfg.endHour}:00 (${cfg.daysOfWeek?.length} days)`;
+    case 'ImpossibleTravel':
+      return `Max Speed: ${cfg.maxSpeedKmh} km/h`;
+    case 'Fingerprint':
+      return `Max Devices: ${cfg.maxDevicesPerSession}`;
+    default:
+      return 'Custom Configuration';
   }
 }

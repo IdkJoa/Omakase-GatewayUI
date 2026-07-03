@@ -3,28 +3,32 @@ import { TableLazyLoadEvent, TableModule } from "primeng/table";
 import { Policies } from '../../interfaces/policies.interface';
 import { paramsGrid } from '../../../../shared/layout/interfaces/ParamsGrid';
 import { Column } from '../../../../shared/layout/interfaces/Columns';
-import { getColumnWidth } from '../../../../shared/Utils/function.datagrid';
+import { getColumnWidth, getConditionText } from '../../../../shared/Utils/function.datagrid';
 import { DecimalPipe } from '@angular/common';
 import { IconField } from "primeng/iconfield";
 import { InputIcon } from "primeng/inputicon";
 import { InputText } from "primeng/inputtext";
 import { FormsModule } from '@angular/forms';
 import { Button } from "primeng/button";
+import { PopoverModule } from 'primeng/popover';
+import { buttonOptions } from '../../../../shared/Utils/buttonsOptions';
 
 @Component({
   selector: 'app-datagrid-policies',
-  imports: [TableModule, DecimalPipe, IconField, InputIcon, InputText, FormsModule, Button],
+  imports: [TableModule,PopoverModule, DecimalPipe, IconField, InputIcon, InputText, FormsModule, Button],
   templateUrl: './datagrid-policies.component.html',
   styleUrl: './datagrid-policies.component.css',
 })
 export class DatagridPoliciesComponent {
-  data = input.required<Policies[]>();
-  totalRecords = input.required<number>();
-  loading = input.required<boolean>();
-  public paramsGrid = output<paramsGrid>();
-  columns = input.required<Column[]>();
+  public readonly data = input.required<Policies[]>();
+  public readonly totalRecords = input.required<number>();
+  public readonly loading = input.required<boolean>();
+  public readonly paramsGrid = output<paramsGrid>();
+  public readonly columns = input.required<Column[]>();
   private currentPage = 1;
   private currentLimit = 20;
+  public readonly buttonOptions = input.required<buttonOptions[]>();
+  public readonly selectedPolicies = signal<Policies | null>(null);
 
   public typeSelected = signal<string>("");
   public getColumnWidth = getColumnWidth;
@@ -61,22 +65,7 @@ export class DatagridPoliciesComponent {
     this.onFilterChange();
   }
 
-
-  public getConditionText(policy: Policies): string {
-    const cfg = policy.config;
-    switch (policy.type) {
-      case 'Geofence':
-        return `Countries: ${cfg.allowedCountries?.join(', ')}`;
-      case 'TimeWindow':
-        return `${cfg.startHour}:00 - ${cfg.endHour}:00 (${cfg.daysOfWeek?.length} days)`;
-      case 'ImpossibleTravel':
-        return `Max Speed: ${cfg.maxSpeedKmh} km/h`;
-      case 'Fingerprint':
-        return `Max Devices: ${cfg.maxDevicesPerSession}`;
-      default:
-        return 'Custom Configuration';
-    }
-  }
+  getConditionText = getConditionText;
 
   // 5. Utilidades de UI (Colores)
   public getTypeColor(type: string): string {

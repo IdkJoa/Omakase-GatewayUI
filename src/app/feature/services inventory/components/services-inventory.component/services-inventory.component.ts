@@ -11,6 +11,6 @@ import { Toast } from 'primeng/toast';
   styleUrl: './services-inventory.component.css',
 })
 export class ServicesInventoryComponent {
-  private msg = inject(MessageService);
-  private confirmation = inject(ConfirmationService);
+  private readonly msg = inject(MessageService);
+  private readonly confirmation = inject(ConfirmationService);
 }

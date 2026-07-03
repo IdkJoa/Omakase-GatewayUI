@@ -2,3 +2,6 @@
 @import "tailwindcss";
 @import "primeicons/primeicons.css";
 
+td {
+  height: 3rem;
+}

@@ -11,6 +11,6 @@ import { Toast } from 'primeng/toast'
   styleUrl: './profile-devices.component.css',
 })
 export class ProfileDevicesComponent {
-  private msg = inject(MessageService);
-  private confirmation = inject(ConfirmationService);
+  private readonly msg = inject(MessageService);
+  private readonly confirmation = inject(ConfirmationService);
 }

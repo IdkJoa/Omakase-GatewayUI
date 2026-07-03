@@ -1,19 +1,19 @@
 <div class="flex flex-col lg:flex-row gap-4 mb-4 justify-end items-center">
   <div class="flex gap-8 items-end">
     <p-iconfield iconPosition="left">
-        <p-inputicon class="pi pi-search text-[#9a96a8]" />
-        <input
-          type="text"
-          pInputText
-          [(ngModel)]="typeSelected"
-          (keyup.enter)="onFilterChange()"
-          placeholder="Buscar por tipo... (Enter para buscar)"
-          class="w-85 bg-[#1a1726] border border-[#2f2b43] rounded-md pl-9 pr-4 py-2 text-xs text-[#F3F3F6] focus:border-[#9D72FF] outline-none"
-        />
-      </p-iconfield>
+      <p-inputicon class="pi pi-search text-[#9a96a8]" />
+      <input
+        type="text"
+        pInputText
+        [(ngModel)]="typeSelected"
+        (keyup.enter)="onFilterChange()"
+        placeholder="Buscar por tipo... (Enter para buscar)"
+        class="w-85 bg-[#1a1726] border border-[#2f2b43] rounded-md pl-9 pr-4 py-2 text-xs text-[#F3F3F6] focus:border-[#9D72FF] outline-none"
+      />
+    </p-iconfield>
   </div>
   <p-button icon="pi pi-filter-slash" (onClick)="limpiarFiltros()" class="p-button-text">
-    </p-button>
+  </p-button>
 </div>
 
 <div class="bg-[#1A1726] border border-[#2F2B43] rounded-md w-full overflow-hidden shadow-xl">
@@ -43,14 +43,14 @@
         }
         <th style="width: 5%" class="text-center relative overflow-visible">
           <div class="flex items-center gap-1.5 justify-between">
-            <span class="truncate">DETAILS</span>
+            <span class="truncate">ACCIONES</span>
           </div>
         </th>
       </tr>
     </ng-template>
-    <ng-template pTemplate="body" let-policies>
+    <ng-template pTemplate="body" let-policies >
       <tr class="hover:bg-[#232032] transition-colors border-b border-[#2F2B43]/50 text-xs">
-        <td class="font-mono text-[11px] text-[#9a96a8] pl-6 py-4">
+        <td class="font-mono text-[11px] text-[#9a96a8] pl-6 py-4 h-10">
           {{ policies.name }}
         </td>
         <td class="py-4">
@@ -66,11 +66,17 @@
           {{ policies.createdByUsername }}
         </td>
         <td class="py-4 text-center">
-          <button
-            class="p-2 hover:bg-[#2F2B43] rounded-md text-[#9A96A8] hover:text-[#9D72FF] transition"
-          >
-            <i class="pi pi-arrow-right"></i>
-          </button>
+          <div class="flex justify-center">
+            <button
+              type="button"
+              pButton
+              severity="secondary"
+              variant="outlined"
+              (click)="op.toggle($event); selectedPolicies.set(policies);"
+            >
+              <i class="pi pi-ellipsis-h"></i>
+            </button>
+          </div>
         </td>
       </tr>
     </ng-template>
@@ -83,3 +89,14 @@
     </ng-template>
   </p-table>
 </div>
+
+<p-popover #op>
+  <div class="flex  gap-4">
+    <button class="p-link hover:scale-95 hover:cursor-pointer" (click)="selectedPolicies() && buttonOptions()[1].action(selectedPolicies()!)">
+      <i [class]="buttonOptions()[1].icon"></i>
+    </button>
+    <button class="p-link hover:scale-95 hover:cursor-pointer" (click)="selectedPolicies() && buttonOptions()[0].action(selectedPolicies()!)">
+      <i [class]="buttonOptions()[0].icon"></i>
+    </button>
+  </div>
+</p-popover>

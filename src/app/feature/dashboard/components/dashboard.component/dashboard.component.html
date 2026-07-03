@@ -10,7 +10,11 @@
 <!-- <p-tag value="{{totalRecords()}} Registrados" class="mr-4"/> -->
 
 <div class="flex flex-col justify-center items-center mt-6">
-  <app-system-health [metrics]="metrics()" [logs]="logs()" />
+  <app-system-health
+    class="xl:w-full xl:gap-4! xl:pl-10 xl:pr-12"
+    [metrics]="metrics()"
+    [logs]="logs()"
+  />
 
   <section class="flex justify-center items-center mt-10 w-full">
     <div class="flex flex-col gap-2 ml-10 w-full">

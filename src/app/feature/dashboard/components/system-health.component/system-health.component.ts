@@ -14,8 +14,8 @@ import { Logs_Data } from '../../../audit forense/interface/logs.interfaces';
   styleUrl: './system-health.component.css',
 })
 export class SystemHealthComponent {
-  public metrics = input<Metrics | null>(null);
-  public logs = input<Logs_Data[] | null>(null);
+  public readonly metrics = input<Metrics | null>(null);
+  public readonly logs = input<Logs_Data[] | null>(null);
 
   public chartData = computed(() => {
     const logsList = this.logs();
