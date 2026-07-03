@@ -21,6 +21,42 @@
 
 <p-divider class="bg-[#252233]! mb-6"></p-divider>
 
+<!-- componente card -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 pl-10 pr-10">
+
+    <div class="bg-[#1A1726] border border-[#2F2B43] rounded-xl p-5 flex items-center gap-5 hover:bg-[#232032] transition-colors">
+      <div class="bg-[#2F2B43] w-12 h-12 rounded-lg flex items-center justify-center">
+        <i class="pi pi-list text-[#9A96A8] text-xl"></i>
+      </div>
+      <div class="flex flex-col">
+        <span class="text-[10px] text-[#9A96A8] font-bold uppercase tracking-widest mb-1">Total Políticas</span>
+        <span class="text-3xl font-black text-[#F3F3F6]">{{ totalRecords() }}</span>
+      </div>
+    </div>
+
+    <div class="bg-[#1A1726] border border-[#2F2B43] rounded-xl p-5 flex items-center gap-5 hover:bg-[#232032] transition-colors">
+      <div class="bg-[#10B981]/10 border border-[#10B981]/20 w-12 h-12 rounded-lg flex items-center justify-center">
+        <i class="pi pi-shield text-[#10B981] text-xl"></i>
+      </div>
+      <div class="flex flex-col">
+        <span class="text-[10px] text-[#9A96A8] font-bold uppercase tracking-widest mb-1">Activas</span>
+        <span class="text-3xl font-black text-[#10B981]">{{ activePolicies() }}</span>
+      </div>
+    </div>
+
+    <div class="bg-[#1A1726] border border-[#2F2B43] rounded-xl p-5 flex items-center gap-5 hover:bg-[#232032] transition-colors">
+      <div class="bg-[#EF4444]/10 border border-[#EF4444]/20 w-12 h-12 rounded-lg flex items-center justify-center">
+        <i class="pi pi-times-circle text-[#EF4444] text-xl"></i>
+      </div>
+      <div class="flex flex-col">
+        <span class="text-[10px] text-[#9A96A8] font-bold uppercase tracking-widest mb-1">Inactivas</span>
+        <span class="text-3xl font-black text-[#EF4444]">{{ inactivePolicies() }}</span>
+      </div>
+    </div>
+  </div>
+
+
+<!-- Componente table-->
 <div class="flex justify-center items-center w-full h-full mt-6 pl-10 pr-10">
   <app-datagrid-policies
     class="w-full min-h-50"

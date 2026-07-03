@@ -120,4 +120,12 @@ export class PoliciesComponent implements OnInit {
   onPolicysaved(): void {
     this.LoadPolicies();
   }
+
+  getActiveRecord() {
+    const active = 0;
+    const inactives = 0;
+  }
+
+  public activePolicies = computed(() => this.data().filter(p => p.isActive).length);
+  public inactivePolicies = computed(() => this.data().filter(p => !p.isActive).length);
 }
