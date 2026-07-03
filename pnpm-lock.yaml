@@ -31,6 +31,9 @@ importers:
       '@angular/router':
         specifier: ^21.2.0
         version: 21.2.17(@angular/common@21.2.17(@angular/core@21.2.17(@angular/compiler@21.2.17)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.2.17(@angular/compiler@21.2.17)(rxjs@7.8.2))(@angular/platform-browser@21.2.17(@angular/common@21.2.17(@angular/core@21.2.17(@angular/compiler@21.2.17)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.2.17(@angular/compiler@21.2.17)(rxjs@7.8.2)))(rxjs@7.8.2)
+      '@primeicons/angular':
+        specifier: 8.0.0-alpha.1
+        version: 8.0.0-alpha.1(@angular/core@21.2.17(@angular/compiler@21.2.17)(rxjs@7.8.2))
       '@primeuix/themes':
         specifier: ^2.0.3
         version: 2.0.3
@@ -1096,6 +1099,14 @@ packages:
   '@parcel/watcher@2.5.6':
     resolution: {integrity: sha512-tmmZ3lQxAe/k/+rNnXQRawJ4NjxO2hqiOLTHvWchtGZULp4RyFeh6aU4XdOYBFe2KE1oShQTv4AblOs2iOrNnQ==}
     engines: {node: '>= 10.0.0'}
+
+  '@primeicons/angular@8.0.0-alpha.1':
+    resolution: {integrity: sha512-5PXObNQ9SS8OQLFwIrn3shIKy3HIfC1k2uJQMmIq94bthg+CedY5J/2EX1R1Jk9GLUMWUBb/ti3Vqr99MCKN6Q==}
+    peerDependencies:
+      '@angular/core': '>=21'
+
+  '@primeicons/core@8.0.0-alpha.1':
+    resolution: {integrity: sha512-FjipxrQKiZae/dhspo4s7zUQEat7SjK4tfoiCR3FQh5biaj7LlZFkMmwHkBCQzlVYAujSjRiOdMjPe2jcT6P7A==}
 
   '@primeuix/motion@0.0.10':
     resolution: {integrity: sha512-PsZwOPq79Scp7/ionshRcQ5xKVf9+zuLcyY5mf6onK8chHT5C9JGphmcIZ4CzcqxuGEpsm8AIbTGy+zS3RtzLA==}
@@ -3894,6 +3905,17 @@ snapshots:
       '@parcel/watcher-win32-ia32': 2.5.6
       '@parcel/watcher-win32-x64': 2.5.6
     optional: true
+
+  '@primeicons/angular@8.0.0-alpha.1(@angular/core@21.2.17(@angular/compiler@21.2.17)(rxjs@7.8.2))':
+    dependencies:
+      '@angular/core': 21.2.17(@angular/compiler@21.2.17)(rxjs@7.8.2)
+      '@primeicons/core': 8.0.0-alpha.1
+      '@primeuix/utils': 0.6.4
+      tslib: 2.8.1
+
+  '@primeicons/core@8.0.0-alpha.1':
+    dependencies:
+      '@primeuix/utils': 0.6.4
 
   '@primeuix/motion@0.0.10':
     dependencies:

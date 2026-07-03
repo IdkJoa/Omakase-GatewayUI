@@ -11,9 +11,9 @@ import { getVerdictColor, getRiskColor } from '../../../../shared/Utils/function
   styleUrl: './panel.component.css',
 })
 export class PanelComponent {
-  public logSelected = input.required<Logs_Data | null>();
-  public drawerVisible = model.required<boolean>();
-  public panelClosed = output<void>();
+  public readonly logSelected = input.required<Logs_Data | null>();
+  public readonly drawerVisible = model.required<boolean>();
+  public readonly panelClosed = output<void>();
 
   getVerdictColor = getVerdictColor;
   getRiskColor = getRiskColor;

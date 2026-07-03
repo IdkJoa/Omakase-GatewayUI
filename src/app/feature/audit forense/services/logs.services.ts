@@ -8,8 +8,8 @@ import { paramsGrid } from '../../../shared/layout/interfaces/ParamsGrid';
 
 @Injectable({ providedIn: 'root' })
 export class LogsService {
-  private http = inject(HttpClient);
-  private baseUrl = `${environment.API_URL}/logs`;
+  private readonly http = inject(HttpClient);
+  private readonly baseUrl = `${environment.API_URL}/logs`;
 
   getLogs(params?: paramsGrid): Observable<Logs> {
     return this.http.get<Logs>(this.baseUrl,

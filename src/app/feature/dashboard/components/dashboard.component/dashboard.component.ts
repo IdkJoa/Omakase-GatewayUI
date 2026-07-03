@@ -18,13 +18,13 @@ import { paramsGrid } from '../../../../shared/layout/interfaces/ParamsGrid';
   styleUrl: './dashboard.component.css',
 })
 export class DashboardComponent implements OnInit {
-  private dashboardServices = inject(DashboardService);
-  private msg = inject(MessageService);
-  public metrics = signal<Metrics | null>(null);
-  private destroyRef = inject(DestroyRef);
-  private logsServices = inject(LogsService);
-  public logs = signal<Logs_Data[]>([]);
-  public logsLive = signal<Logs_Data[]>([]);
+  private readonly  dashboardServices = inject(DashboardService);
+  private readonly msg = inject(MessageService);
+  public readonly metrics = signal<Metrics | null>(null);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly logsServices = inject(LogsService);
+  public readonly logs = signal<Logs_Data[]>([]);
+  public readonly logsLive = signal<Logs_Data[]>([]);
 
   getMetrics() {
     return this.dashboardServices.getMetrics().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
