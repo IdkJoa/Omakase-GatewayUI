@@ -1,1 +1,77 @@
-<p>policies.component works!</p>,
+<p-toast />
+<p-confirmdialog />
+
+<div class="flex items-center justify-between mb-2">
+  <div class="flex flex-col items-left justify-center pt-6 pl-6 ml-6">
+    <h1 class="text-5xl font-bold opacity-80">Gestión de Políticas Deterministas</h1>
+
+    <p class="text-muted-color mt-2.5 opacity-90 text-gray-400">
+      Configura y prioriza las reglas de control de acceso del gateway.
+    </p>
+  </div>
+
+  <p-button
+    label="Nueva Política"
+    icon="pi pi-plus"
+    class="text-white border-none text-sm font-semibold px-4 py-2"
+    [style]="{ 'background-color': '#9d72ff' }"
+    (onClick)="openCreate()"
+  ></p-button>
+</div>
+
+<p-divider class="bg-[#252233]! mb-6"></p-divider>
+
+<!-- componente card -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 pl-10 pr-10">
+
+    <div class="bg-[#1A1726] border border-[#2F2B43] rounded-xl p-5 flex items-center gap-5 hover:bg-[#232032] transition-colors">
+      <div class="bg-[#2F2B43] w-12 h-12 rounded-lg flex items-center justify-center">
+        <i class="pi pi-list text-[#9A96A8] text-xl"></i>
+      </div>
+      <div class="flex flex-col">
+        <span class="text-[10px] text-[#9A96A8] font-bold uppercase tracking-widest mb-1">Total Políticas</span>
+        <span class="text-3xl font-black text-[#F3F3F6]">{{ totalRecords() }}</span>
+      </div>
+    </div>
+
+    <div class="bg-[#1A1726] border border-[#2F2B43] rounded-xl p-5 flex items-center gap-5 hover:bg-[#232032] transition-colors">
+      <div class="bg-[#10B981]/10 border border-[#10B981]/20 w-12 h-12 rounded-lg flex items-center justify-center">
+        <i class="pi pi-shield text-[#10B981] text-xl"></i>
+      </div>
+      <div class="flex flex-col">
+        <span class="text-[10px] text-[#9A96A8] font-bold uppercase tracking-widest mb-1">Activas</span>
+        <span class="text-3xl font-black text-[#10B981]">{{ activePolicies() }}</span>
+      </div>
+    </div>
+
+    <div class="bg-[#1A1726] border border-[#2F2B43] rounded-xl p-5 flex items-center gap-5 hover:bg-[#232032] transition-colors">
+      <div class="bg-[#EF4444]/10 border border-[#EF4444]/20 w-12 h-12 rounded-lg flex items-center justify-center">
+        <i class="pi pi-times-circle text-[#EF4444] text-xl"></i>
+      </div>
+      <div class="flex flex-col">
+        <span class="text-[10px] text-[#9A96A8] font-bold uppercase tracking-widest mb-1">Inactivas</span>
+        <span class="text-3xl font-black text-[#EF4444]">{{ inactivePolicies() }}</span>
+      </div>
+    </div>
+  </div>
+
+
+<!-- Componente table-->
+<div class="flex justify-center items-center w-full h-full mt-6 pl-10 pr-10">
+  <app-datagrid-policies
+    class="w-full min-h-50"
+    [columns]="column"
+    [buttonOptions]="buttonsOptions"
+    (paramsGrid)="OnParamsGrid($event)"
+    [data]="data()"
+    [totalRecords]="totalRecords()"
+    [loading]="loading()"
+  />
+</div>
+
+<app-policies-form
+  [visible]="showActionDialog()"
+  (save)="onPolicysaved()"
+  (visibleChange)="showActionDialog.set($event)"
+  [PolicyData]="selectedPolicy()"
+/>

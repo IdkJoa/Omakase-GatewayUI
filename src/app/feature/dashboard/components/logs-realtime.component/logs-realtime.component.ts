@@ -9,7 +9,7 @@ import { Logs_Data } from '../../../audit forense/interface/logs.interfaces';
   styleUrl: './logs-realtime.component.css',
 })
 export class LogsRealtimeComponent {
-  public logs = input.required<Logs_Data[]>();
+  public readonly logs = input.required<Logs_Data[]>();
 
   livelogs = linkedSignal({
     source: this.logs,
