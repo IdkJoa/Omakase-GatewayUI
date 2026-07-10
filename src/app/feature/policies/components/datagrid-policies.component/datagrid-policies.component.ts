@@ -11,11 +11,12 @@ import { InputText } from "primeng/inputtext";
 import { FormsModule } from '@angular/forms';
 import { Button } from "primeng/button";
 import { PopoverModule } from 'primeng/popover';
+import { Tooltip } from 'primeng/tooltip';
 import { buttonOptions } from '../../../../shared/Utils/buttonsOptions';
 
 @Component({
   selector: 'app-datagrid-policies',
-  imports: [TableModule,PopoverModule, DecimalPipe, IconField, InputIcon, InputText, FormsModule, Button],
+  imports: [TableModule, PopoverModule, DecimalPipe, IconField, InputIcon, InputText, FormsModule, Button, Tooltip],
   templateUrl: './datagrid-policies.component.html',
   styleUrl: './datagrid-policies.component.css',
 })

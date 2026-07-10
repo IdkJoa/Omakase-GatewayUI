@@ -3,6 +3,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { Divider } from 'primeng/divider';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { Toast } from 'primeng/toast';
+import { Tooltip } from 'primeng/tooltip';
 import { Button } from 'primeng/button';
 import { PoliciesService } from '../../services/Policies-services';
 import { Policies } from '../../interfaces/policies.interface';
@@ -16,7 +17,7 @@ import { PoliciesFormComponent } from "../policies-form.component/policies-form.
 
 @Component({
   selector: 'app-policies.component',
-  imports: [Divider, Toast, ConfirmDialog, Button, DatagridPoliciesComponent, PoliciesFormComponent],
+  imports: [Divider, Toast, Tooltip, ConfirmDialog, Button, DatagridPoliciesComponent, PoliciesFormComponent],
   providers: [MessageService, ConfirmationService],
   templateUrl: './policies.component.html',
   styleUrl: './policies.component.css',
@@ -46,10 +47,12 @@ export class PoliciesComponent implements OnInit {
     {
       icon: 'pi pi-trash text-red-400 opacity-80',
       action: (policies: Policies) => this.openDelete(policies),
+      tooltip: 'Eliminar política'
     },
     {
       icon: 'pi pi-pencil  text-blue-400 opacity-80',
       action: (policies: Policies) => this.openEdit(policies),
+      tooltip: 'Editar política'
     },
   ];
 
