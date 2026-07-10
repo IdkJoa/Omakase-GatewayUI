@@ -1,4 +1,6 @@
 export interface buttonOptions {
   icon: string,
-  action: Function
+  action: Function,
+  tooltip?: string
 }
+

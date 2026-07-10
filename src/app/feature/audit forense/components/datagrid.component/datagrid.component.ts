@@ -14,6 +14,7 @@ import { Button } from 'primeng/button';
 import { InputText } from 'primeng/inputtext';
 import { DatePipe } from '@angular/common';
 import { PanelComponent } from '../panel.component/panel.component';
+import { Tooltip } from 'primeng/tooltip';
 
 @Component({
   standalone: true,
@@ -30,6 +31,7 @@ import { PanelComponent } from '../panel.component/panel.component';
     IconField,
     InputText,
     PanelComponent,
+    Tooltip,
   ],
   templateUrl: './datagrid.component.html',
   styleUrls: ['./datagrid.component.css'],
