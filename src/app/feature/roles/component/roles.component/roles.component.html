@@ -1,7 +1,39 @@
 <p-toast />
+<p-confirmdialog />
 
-<div class="flex items-center justify-between pt-6  pl-6 ml-6">
-  <h1 class="text-5xl font-bold opacity-80">Gestión de Roles y Permisos</h1>
+<div class="flex items-center justify-between mb-2">
+  <div class="flex flex-col items-left justify-center pt-6 pl-6 ml-6">
+    <h1 class="text-5xl font-bold opacity-80">Gestión de Roles y Permisos</h1>
+    <p class="text-muted-color mt-2.5 opacity-90 text-gray-400">
+      Define y asigna los niveles de privilegios para el control de acceso de los usuarios.
+    </p>
+  </div>
+
+  <p-button
+    pTooltip="Crear rol"
+    label="Nuevo rol"
+    icon="pi pi-plus"
+    class="text-white border-none text-sm font-semibold px-4 py-2"
+    [style]="{ 'background-color': '#9d72ff' }"
+    (onClick)="openCreate()"
+  ></p-button>
 </div>
-<p class="text-muted-color mt-2.5 opacity-90 text-gray-400 pl-6 ml-6">Define y asigna los niveles de privilegios para el control de acceso de los usuarios.</p>
 <p-divider class="bg-[#252233]! mb-6"></p-divider>
+
+<div class="flex justify-center items-center w-full h-full mt-6 pl-10 pr-10">
+  <app-datagrid-roles
+    [buttonsOptions]="buttonsOptions"
+    [columns]="column"
+    [data]="data()"
+    [loading]="loading()"
+  />
+</div>
+
+<app-roles-form
+[visible]="showActionDialog()"
+(saved)="onRoleSaved()"
+(visibleChange)="showActionDialog.set($event)"
+[data]="selectedRole()"
+ />
+
+

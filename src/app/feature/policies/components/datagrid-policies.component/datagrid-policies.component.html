@@ -74,6 +74,8 @@
               pButton
               severity="secondary"
               variant="outlined"
+              pTooltip="Ver acciones"
+              tooltipPosition="top"
               (click)="op.toggle($event); selectedPolicies.set(policies)"
             >
               <i class="pi pi-ellipsis-h"></i>
@@ -94,17 +96,15 @@
 
 <p-popover #op>
   <div class="flex gap-4">
-    <button
+    @for (item of buttonOptions(); track $index) {
+      <button
       class="p-link hover:scale-95 hover:cursor-pointer"
-      (click)="selectedPolicies() && buttonOptions()[1].action(selectedPolicies()!)"
+      [pTooltip]="item.tooltip || ''"
+      tooltipPosition="top"
+      (click)="item.action(selectedPolicies())"
     >
-      <i [class]="buttonOptions()[1].icon"></i>
+      <i [class]="item.icon"></i>
     </button>
-    <button
-      class="p-link hover:scale-95 hover:cursor-pointer"
-      (click)="selectedPolicies() && buttonOptions()[0].action(selectedPolicies()!)"
-    >
-      <i [class]="buttonOptions()[0].icon"></i>
-    </button>
+    }
   </div>
 </p-popover>
