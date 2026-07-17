@@ -55,6 +55,8 @@
 <!--Componente tabla -->
 <div class="bg-[#1A1726] border border-[#2F2B43] rounded-md w-full overflow-hidden shadow-xl">
   <p-table
+    [scrollable]="true"
+    scrollHeight="600px"
     [value]="data()"
     [paginator]="true"
     [lazy]="true"
@@ -90,7 +92,7 @@
         <td class="font-mono text-[11px] text-[#9a96a8] pl-6 py-4">
           {{ log.timestamp | date: 'fullDate' }}
         </td>
-        <td class="py-4 ">
+        <td class="py-4">
           <span class="text-xs font-mono text-gray-400">{{ log.sourceIp }}</span>
         </td>
         <td class="py-4">
@@ -126,5 +128,8 @@
 </div>
 
 <!-- Componente panel -->
-<app-panel [logSelected]="logSelected()" [(drawerVisible)]="drawerVisible" (panelClosed)="onPanelClosed()"/>
-
+<app-panel
+  [logSelected]="logSelected()"
+  [(drawerVisible)]="drawerVisible"
+  (panelClosed)="onPanelClosed()"
+/>

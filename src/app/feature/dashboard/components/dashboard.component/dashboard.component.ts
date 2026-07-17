@@ -42,7 +42,7 @@ export class DashboardComponent implements OnInit {
       const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
     const params: paramsGrid = {
       page: "1",
-      pageSize: "5",
+      pageSize: "100",
       to: now.toISOString(),
       from: twentyFourHoursAgo.toISOString(),
     }
@@ -60,7 +60,7 @@ export class DashboardComponent implements OnInit {
   getLogs() {
     const params: paramsGrid = {
       page: "1",
-      pageSize: "5",
+      pageSize: "100",
     }
 
     return this.logsServices.getLogs(params).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({

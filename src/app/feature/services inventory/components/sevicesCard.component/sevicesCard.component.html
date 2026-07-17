@@ -1,0 +1,18 @@
+<section class="grid grid-cols-3 gap-10 mb-10 p-5">
+
+  <div class="bg-[#1A1726] border border-[#2F2B43] rounded-xl p-5 flex flex-col pl-6  gap-2 hover:bg-[#232032] transition-colors">
+    <p class="text-lg text-white/50 font-semibold">Total Servicios</p>
+    <p class="font-bold text-4xl text-[#753087]">{{data()?.totalRecords || 0}}</p>
+  </div>
+
+  <div class="bg-[#1A1726] border border-[#2F2B43] rounded-xl p-5 flex flex-col pl-6  gap-2 hover:bg-[#232032] transition-colors">
+    <p class="text-lg text-white/50 font-semibold">Servicios Activos</p>
+    <p class="font-bold text-4xl text-emerald-500/80">{{ServicesActive() || 0}}</p>
+  </div>
+
+  <div class="bg-[#1A1726] border border-[#2F2B43] rounded-xl p-5 flex flex-col pl-6  gap-2 hover:bg-[#232032] transition-colors">
+    <p class="text-lg text-white/50 font-semibold">Servicios Inactivos</p>
+    <p class="font-bold text-4xl text-red-500/70">{{ServicesInactive() || 0}}</p>
+  </div>
+
+</section>
