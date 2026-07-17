@@ -18,20 +18,18 @@
   >
     <ng-template pTemplate="header">
       <tr>
-        <th colspan="6" class="border-none bg-transparent! p-4 pb-0">
+        <th colspan="6" class="border-none p-4 pb-0">
         <div class="flex gap-3 mb-2 justify-end items-center w-full px-6">
 
-            <p-iconfield iconPosition="left">
-              <p-inputicon class="pi pi-search text-[#9a96a8]" />
-              <input
-                type="text"
-                pInputText
-                [(ngModel)]="typeSelected"
-                (keyup.enter)="onFilterChange()"
-                placeholder="Buscar por tipo... (Enter para buscar)"
-                class="w-85 bg-[#1a1726] border border-[#2f2b43] rounded-md pl-9 pr-4 py-2 text-xs text-[#F3F3F6] focus:border-[#9D72FF] outline-none"
-              />
-            </p-iconfield>
+            <select
+              [ngModel]="typeSelected()"
+              (ngModelChange)="typeSelected.set($event); onFilterChange()"
+              class="w-85 bg-[#1a1726] border border-[#2f2b43] rounded-md px-3 py-2 text-xs text-[#F3F3F6] focus:border-[#9D72FF] outline-none cursor-pointer"
+            >
+              <option [disabled]="true" [selected]="true" value="">Buscar por estado...</option>
+              <option value="true">Activo</option>
+              <option value="false">Inactivo</option>
+            </select>
           <p-button icon="pi pi-filter-slash" (onClick)="limpiarFiltros()" class="p-button-text">
           </p-button>
         </div>
@@ -52,25 +50,25 @@
         </th>
       </tr>
     </ng-template>
-    <ng-template pTemplate="body" let-policies>
+    <ng-template pTemplate="body" let-services>
       <tr class="hover:bg-[#232032] transition-colors border-b border-[#2F2B43]/50 text-xs">
         <td class="font-mono text-[11px] text-[#9a96a8] pl-6 py-4 h-10">
-          {{ policies.name }}
+          {{ services.name }}
         </td>
         <td class="py-4">
-          <span class="text-xs font-mono text-gray-400">{{ policies.type }}</span>
-        </td>
-        <td class="py-4">
-          {{ policies.weight | number: '1.1-1' }}
+          {{ services.upstreamUrl}}
         </td>
         <td class="py-4 font-bold tracking-wide">
-          <span>{{ getConditionText(policies) }}</span>
+          <span>{{ FormattedStatus(services.requiresAuth, "required") }}</span>
         </td>
         <td class="py-4 font-bold">
-          {{ policies.createdByUsername }}
+          {{ FormattedStatus(services.isActive, "status") }}
+        </td>
+        <td class="py-4 font-bold">
+          {{ services.associatedPoliciesCount }}
         </td>
         <td class="py-4 text-center">
-          <div class="flex justify-center">
+          <div class="flex justify-center pr-6">
             <button
               type="button"
               pButton
@@ -78,7 +76,7 @@
               variant="outlined"
               pTooltip="Ver acciones"
               tooltipPosition="top"
-              (click)="op.toggle($event); selectedPolicies.set(policies)"
+              (click)="op.toggle($event); selectedServices.set(services)"
             >
               <i class="pi pi-ellipsis-h"></i>
             </button>
@@ -103,7 +101,7 @@
       class="p-link hover:scale-95 hover:cursor-pointer"
       [pTooltip]="item.tooltip || ''"
       tooltipPosition="top"
-      (click)="item.action(selectedPolicies())"
+      (click)="item.action(selectedServices())"
     >
       <i [class]="item.icon"></i>
     </button>
