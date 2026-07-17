@@ -22,7 +22,7 @@ import { PoliciesFormComponent } from "../policies-form.component/policies-form.
   templateUrl: './policies.component.html',
   styleUrl: './policies.component.css',
 })
-export class PoliciesComponent implements OnInit {
+export class PoliciesComponent  {
   private readonly msg = inject(MessageService);
   private readonly confirmation = inject(ConfirmationService);
   private readonly services = inject(PoliciesService);
@@ -56,9 +56,9 @@ export class PoliciesComponent implements OnInit {
     },
   ];
 
-  ngOnInit(): void {
-    this.LoadPolicies();
-  }
+  // ngOnInit(): void {
+  //   this.LoadPolicies();
+  // }
 
   LoadPolicies() {
     this.loading.set(true);
