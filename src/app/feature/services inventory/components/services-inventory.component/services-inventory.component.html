@@ -14,15 +14,15 @@
     pTooltip="Agregar servicio"
     label="Nuevo Servicio"
     icon="pi pi-plus"
-    class="text-white border-none text-sm font-semibold px-4 py-2"
+    class="text-white border-none text-sm font-semibold px-4 py-2 mr-6"
     [style]="{ 'background-color': '#9d72ff' }"
     (onClick)="openCreate()"
   />
 </div>
 <p-divider class="bg-[#252233]! mb-6"></p-divider>
 
-<main class="flex flex-col gap-2 pr-10 pl-10">
-  <app-sevices-card />
+<main class="flex flex-col gap-2 pr-10 pl-10 mb-10">
+  <app-sevices-card [servicesList]="data()" [totalCountInput]="totalRecords()" />
 
   <app-datagrid
     class="w-full min-h-50"
@@ -35,36 +35,67 @@
     (paramsGrid)="OnparamsGrid($event)"
   >
     <!-- Filtro por estado -->
-    <div filters class="flex gap-3 mb-2 justify-end items-center w-full px-6">
+    <div filters class="flex gap-3 mb-2 justify-end items-center w-full px-6 py-2">
       <select
         [ngModel]="typeSelected()"
         (ngModelChange)="typeSelected.set($event); onFilterChange()"
-        class="w-85 bg-[#1a1726] border border-[#2f2b43] rounded-md px-3 py-2 text-xs text-[#F3F3F6] focus:border-[#9D72FF] outline-none cursor-pointer"
+        class="w-64 bg-[#1a1726] border border-[#2f2b43] rounded-lg px-3 py-2 text-xs text-[#F3F3F6] focus:border-[#9D72FF] outline-none cursor-pointer"
       >
-        <option [disabled]="true" [selected]="true" value="">Buscar por estado...</option>
+        <option value="">Todos los estados</option>
         <option value="true">Activo</option>
         <option value="false">Inactivo</option>
       </select>
-      <p-button icon="pi pi-filter-slash" (onClick)="limpiarFiltros()" class="p-button-text" />
+
+      @if (typeSelected() !== '') {
+        <p-button
+          icon="pi pi-filter-slash"
+          (onClick)="limpiarFiltros()"
+          class="p-button-text"
+          pTooltip="Limpiar filtros"
+          tooltipPosition="top"
+        />
+      }
     </div>
 
     <!-- Row template -->
     <ng-template #bodyTemplate let-services>
       <tr class="hover:bg-[#232032] transition-colors border-b border-[#2F2B43]/50 text-xs">
-        <td class="font-mono text-[11px] text-[#9a96a8] pl-6 py-4 h-10">
-          {{ services.name }}
+        <td class="font-mono text-[11px] text-[#F3F3F6] pl-6 py-4 h-10 font-bold">
+          <div class="flex items-center gap-2.5">
+            <div class="bg-[#9D72FF]/10 text-[#9D72FF] p-1.5 rounded-md">
+              <i class="pi pi-server text-xs"></i>
+            </div>
+            <span>{{ services.name }}</span>
+          </div>
         </td>
         <td class="py-4">
-          {{ services.upstreamUrl }}
-        </td>
-        <td class="py-4 font-bold tracking-wide">
-          <span>{{ FormattedStatus(services.requiresAuth, 'required') }}</span>
-        </td>
-        <td class="py-4 font-bold">
-          {{ FormattedStatus(services.isActive, 'status') }}
+          <span class="font-mono text-xs text-gray-300 bg-[#1A1726] border border-[#2F2B43] px-2.5 py-1 rounded">
+            {{ services.upstreamUrl }}
+          </span>
         </td>
         <td class="py-4 font-bold">
-          {{ services.associatedPoliciesCount }}
+          <span
+            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold border"
+            [ngClass]="services.requiresAuth ? 'bg-[#3B82F6]/10 text-[#3B82F6] border-[#3B82F6]/30' : 'bg-gray-800/40 text-gray-400 border-gray-700'"
+          >
+            <i [ngClass]="services.requiresAuth ? 'pi pi-lock' : 'pi pi-unlock'" class="text-[10px]"></i>
+            {{ FormattedStatus(services.requiresAuth, 'required') }}
+          </span>
+        </td>
+        <td class="py-4 font-bold">
+          <span
+            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold border"
+            [ngClass]="services.isActive ? 'bg-[#10B981]/10 text-[#10B981] border-[#10B981]/30' : 'bg-[#EF4444]/10 text-[#EF4444] border-[#EF4444]/30'"
+          >
+            <i [ngClass]="services.isActive ? 'pi pi-check-circle' : 'pi pi-power-off'" class="text-[10px]"></i>
+            {{ FormattedStatus(services.isActive, 'status') }}
+          </span>
+        </td>
+        <td class="py-4 font-bold">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs bg-[#9D72FF]/10 text-[#9D72FF] border border-[#9D72FF]/30">
+            <i class="pi pi-shield text-xs"></i>
+            <span>{{ services.associatedPoliciesCount }} políticas</span>
+          </span>
         </td>
         <td class="py-4 text-center">
           <div class="flex justify-center pr-6">
@@ -107,3 +138,4 @@
   (visibleChange)="showActionDialog.set($event)"
   [ServicesData]="selectedServices()"
 />
+

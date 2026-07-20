@@ -61,6 +61,14 @@ export class ProfileDevicesComponent {
   public readonly userTypeFilter = signal<string>('');
   public readonly isActiveFilter = signal<string>('');
 
+  // Métricas
+  public readonly totalUsersCount = computed(() => this.totalRecords() || this.data().length);
+  public readonly activeUsersCount = computed(() => this.data().filter((u) => u.isActive).length);
+  public readonly inactiveUsersCount = computed(() => this.data().filter((u) => !u.isActive).length);
+  public readonly failedAttemptsUsersCount = computed(
+    () => this.data().filter((u) => (u.failedAttempts || 0) > 0).length
+  );
+
   public readonly filterParams = computed(() => {
     const p: Record<string, any> = {};
 

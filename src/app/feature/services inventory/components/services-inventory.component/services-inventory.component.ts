@@ -17,6 +17,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatagridComponent } from '../../../../shared/components/datagrid.component/datagrid.component';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { ServicesformComponent } from '../servicesform.component/servicesform.component';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-services-inventory.component',
@@ -32,6 +33,7 @@ import { ServicesformComponent } from '../servicesform.component/servicesform.co
     ServicesformComponent,
     PopoverModule,
     FormsModule,
+    NgClass,
   ],
   providers: [MessageService, ConfirmationService],
   templateUrl: './services-inventory.component.html',
