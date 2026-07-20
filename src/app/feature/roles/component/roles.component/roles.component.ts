@@ -3,26 +3,39 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { Divider } from 'primeng/divider';
 import { Toast } from 'primeng/toast';
 import { Button } from 'primeng/button';
-import { DatagridRolesComponent } from '../datagrid-roles.component/datagrid-roles.component';
+import { PopoverModule } from 'primeng/popover';
+import { Tooltip } from 'primeng/tooltip';
+import { ConfirmDialog } from 'primeng/confirmdialog';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
+import { DatagridComponent } from '../../../../shared/components/datagrid.component/datagrid.component';
 import { RolesResponse } from '../../interfaces/roles.interface';
 import { RolesService } from '../../services/roles.services';
 import { Column } from '../../../../shared/layout/interfaces/Columns';
 import { ROLES_COLUMN } from '../../data/data';
 import { buttonOptions } from '../../../../shared/Utils/buttonsOptions';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Tooltip } from "primeng/tooltip";
-import { ConfirmDialog } from "primeng/confirmdialog";
-import { RolesFormComponent } from "../roles-form.component/roles-form.component";
+import { RolesFormComponent } from '../roles-form.component/roles-form.component';
 import { UserRoleDialogComponent } from '../../../profile devices/components/user-role-dialog/user-role-dialog.component';
 
 @Component({
   selector: 'app-roles',
-  imports: [Divider, Toast, Button, DatagridRolesComponent, Tooltip, ConfirmDialog, RolesFormComponent, UserRoleDialogComponent],
+  standalone: true,
+  imports: [
+    Divider,
+    Toast,
+    Button,
+    DatagridComponent,
+    PopoverModule,
+    Tooltip,
+    ConfirmDialog,
+    RolesFormComponent,
+    UserRoleDialogComponent,
+  ],
   providers: [MessageService, ConfirmationService],
   templateUrl: './roles.component.html',
   styleUrl: './roles.component.css',
 })
-export class RolesComponent implements OnInit{
+export class RolesComponent implements OnInit {
   private readonly msg = inject(MessageService);
   private readonly confirmation = inject(ConfirmationService);
   public readonly data = signal<RolesResponse[]>([]);
@@ -40,7 +53,7 @@ export class RolesComponent implements OnInit{
   }
 
   LoadRole() {
-    this.loading.set(false);
+    this.loading.set(true);
     this.services
       .LoadRoles()
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -50,10 +63,11 @@ export class RolesComponent implements OnInit{
           this.loading.set(false);
         },
         error: () => {
+          this.loading.set(false);
           this.msg.add({
             severity: 'error',
             summary: 'Error',
-            detail: 'eror al cargar los roles',
+            detail: 'Error al cargar los roles',
           });
         },
       });
@@ -63,21 +77,21 @@ export class RolesComponent implements OnInit{
     {
       icon: 'pi pi-trash text-red-400 opacity-80',
       action: (role: RolesResponse) => this.openDelete(role),
-      tooltip: 'Eliminar rol'
+      tooltip: 'Eliminar rol',
     },
     {
-      icon: 'pi pi-pencil  text-blue-400 opacity-80',
+      icon: 'pi pi-pencil text-blue-400 opacity-80',
       action: (role: RolesResponse) => this.openEdit(role),
-      tooltip: 'Editar rol'
+      tooltip: 'Editar rol',
     },
     {
       icon: 'pi pi-user-plus text-emerald-400 opacity-80',
       action: (role: RolesResponse) => this.openAssigment(role),
-      tooltip: 'Asignar / Desasignar Usuarios'
+      tooltip: 'Asignar / Desasignar Usuarios',
     },
   ];
 
-  openAssigment(role: RolesResponse){
+  openAssigment(role: RolesResponse) {
     this.selectedRole.set(role);
     this.showUserRoleDialog.set(true);
   }

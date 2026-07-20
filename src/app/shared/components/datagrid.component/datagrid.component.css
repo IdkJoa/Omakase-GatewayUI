@@ -1,5 +1,6 @@
+/* Styles for shared datagrid */
 :host {
-  display: block;
+    display: block;
 }
 
 :host ::ng-deep .p-datatable-custom {

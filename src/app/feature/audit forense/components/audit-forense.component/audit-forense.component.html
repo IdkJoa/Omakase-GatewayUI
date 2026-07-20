@@ -1,12 +1,112 @@
 <p-toast />
 
-<div class="flex items-center justify-between pt-6  pl-6 ml-6">
+<div class="flex items-center justify-between pt-6 pl-6 ml-6">
   <h1 class="text-5xl font-bold opacity-80">Explorador Audit Forense</h1>
 </div>
 <p class="text-muted-color mt-2.5 opacity-90 text-gray-400 pl-6 ml-6">Analiza y rastrea los registros de cada evaluación ejecutada por el gateway.</p>
 <p-divider class="bg-[#252233]! mb-6"></p-divider>
 
 <div class="flex justify-center items-center w-full h-full mt-6 pl-10 pr-10">
-  <app-datagrid class="w-full min-h-50" [columns]="columns"  (paramsGrid)="OnParamsGrid($event)"
-    [data]="logs()" [totalRecords]="totalRecord()" [loading]="loading()" />
+  <app-datagrid
+    class="w-full min-h-50"
+    [columns]="columns"
+    [data]="logs()"
+    [totalRecords]="totalRecord()"
+    [loading]="loading()"
+    [extraParams]="filterParams()"
+    actionsHeader="DETAILS"
+    (paramsGrid)="OnParamsGrid($event)"
+  >
+    <!-- Filtros específicos -->
+    <div filters class="flex flex-col lg:flex-row gap-4 mb-4 justify-between items-center w-full">
+      <div class="flex gap-8 items-center 2xl:justify-between 2xl:w-full">
+        <p-select
+          [options]="verdictOptions"
+          [ngModel]="selectedVerdict()"
+          (ngModelChange)="selectedVerdict.set($event); onFilterChange()"
+          optionValue="value"
+          placeholder="Veredicto"
+          class="w-40 2xl:w-50 h-9 bg-[#1A1726] border-[#2F2B43] text-xs text-[#9A96A8]"
+        />
+
+        <p-datepicker
+          [ngModel]="selecetedDateRange()"
+          (ngModelChange)="selecetedDateRange.set($event); onFilterChange()"
+          selectionMode="range"
+          readonlyInput="true"
+          placeholder="Rango de fechas"
+          class="bg-[#1a1726] border-[#2f2b43] text-xs h-9 2xl:w-70"
+        />
+
+        <p-iconfield iconPosition="left">
+          <p-inputicon class="pi pi-search text-[#9a96a8]" />
+          <input
+            type="text"
+            pInputText
+            [ngModel]="selectedIp()"
+            (ngModelChange)="selectedIp.set($event)"
+            (keyup.enter)="onFilterChange()"
+            placeholder="Buscar por ip... (Enter para buscar)"
+            class="w-73 2xl:w-95 bg-[#1a1726] border border-[#2f2b43] rounded-md pl-9 pr-4 py-2 text-xs text-[#F3F3F6] focus:border-[#9D72FF] outline-none"
+          />
+        </p-iconfield>
+
+        <div class="relative flex-1 max-w-md ml-auto 2xl:ml-2">
+          <p-iconfield iconPosition="left">
+            <p-inputicon class="pi pi-search text-[#9a96a8]" />
+            <input
+              type="text"
+              pInputText
+              [ngModel]="globalSearch()"
+              (ngModelChange)="globalSearch.set($event)"
+              (keyup.enter)="onFilterChange()"
+              placeholder="Buscar por servicio... (Enter para buscar)"
+              class="w-85 2xl:w-105 bg-[#1a1726] border border-[#2f2b43] rounded-md pl-9 pr-4 py-2 text-xs text-[#F3F3F6] focus:border-[#9D72FF] outline-none"
+            />
+          </p-iconfield>
+        </div>
+
+        <p-button icon="pi pi-filter-slash" (onClick)="limpiarFiltros()" class="p-button-text 2xl:mr-1" />
+      </div>
+    </div>
+
+    <!-- Template de filas -->
+    <ng-template #bodyTemplate let-log>
+      <tr class="hover:bg-[#232032] transition-colors border-b border-[#2F2B43]/50 text-xs">
+        <td class="font-mono text-[11px] text-[#9a96a8] pl-6 py-4">
+          {{ log.timestamp | date: 'fullDate' }}
+        </td>
+        <td class="py-4">
+          <span class="text-xs font-mono text-gray-400">{{ log.sourceIp }}</span>
+        </td>
+        <td class="py-4">
+          {{ log.serviceName }}
+          <span class="text-[10px] text-[#9a96a8] tracking-tight"> Endpoint Cluster</span>
+        </td>
+        <td class="py-4 font-bold tracking-wide">
+          <span [class]="getVerdictColor(log.verdict)">{{ log.verdict }}</span>
+        </td>
+        <td class="py-4 font-bold" [class]="getRiskColor(log.riskScore)">
+          {{ log.riskScore }}
+        </td>
+        <td class="py-4 text-center">
+          <button
+            class="p-2 hover:bg-[#2F2B43] rounded-md text-[#9A96A8] hover:text-[#9D72FF] transition"
+            pTooltip="Ver detalles"
+            tooltipPosition="top"
+            (click)="abrirDetalles(log)"
+          >
+            <i class="pi pi-arrow-right"></i>
+          </button>
+        </td>
+      </tr>
+    </ng-template>
+  </app-datagrid>
 </div>
+
+<!-- Componente panel drawer -->
+<app-panel
+  [logSelected]="logSelected()"
+  [(drawerVisible)]="drawerVisible"
+  (panelClosed)="onPanelClosed()"
+/>

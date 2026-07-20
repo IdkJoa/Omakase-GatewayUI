@@ -1,0 +1,72 @@
+<!-- Filtros proyectados opcionales -->
+<ng-content select="[filters]" />
+
+<!-- Tabla -->
+<div class="bg-[#1A1726] border border-[#2F2B43] rounded-md w-full overflow-hidden shadow-xl">
+  <p-table
+    [value]="data()"
+    [paginator]="paginator()"
+    [rows]="rows()"
+    class="p-datatable-custom"
+    [lazy]="lazy()"
+    (onLazyLoad)="onTableLazyLoad($event)"
+    [totalRecords]="totalRecords()"
+    [loading]="loading()"
+    [tableStyle]="tableStyle()"
+    currentPageReportTemplate="Mostrando {first}-{last} de {{ totalRecords() }} registros"
+    [showCurrentPageReport]="paginator()"
+    paginatorDropdownAppendTo="body"
+    [scrollable]="scrollable()"
+    [scrollHeight]="scrollHeight()"
+    [rowsPerPageOptions]="rowsPerPageOptions()"
+  >
+    <ng-template pTemplate="header">
+      <tr class="text-[10px] tracking-widest text-[#9A96A8] uppercase">
+        @for (col of columns(); track col.field) {
+          <th [style.width]="getColumnWidth(col.field)" class="relative overflow-visible">
+            <div class="flex items-center gap-1.5 justify-between">
+              <span class="truncate">{{ col.name }}</span>
+            </div>
+          </th>
+        }
+        @if (showActions()) {
+          <th [style.width]="actionsWidth()" class="text-center relative overflow-visible">
+            <div class="flex items-center gap-1.5 justify-between">
+              <span class="truncate">{{ actionsHeader() }}</span>
+            </div>
+          </th>
+        }
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-item let-rowIndex="rowIndex">
+      @if (bodyTemplate()) {
+        <ng-container
+          *ngTemplateOutlet="bodyTemplate()!; context: { $implicit: item, index: rowIndex }"
+        />
+      } @else {
+        <tr class="hover:bg-[#232032] transition-colors border-b border-[#2F2B43]/50 text-xs">
+          @for (col of columns(); track col.field) {
+            <td class="py-4 px-6 text-[#9a96a8]">
+              {{ item[col.field] }}
+            </td>
+          }
+          @if (showActions()) {
+            <td class="py-4 text-center"></td>
+          }
+        </tr>
+      }
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td
+          [attr.colspan]="columns().length + (showActions() ? 1 : 0)"
+          class="text-center h-20 py-8 text-[#9A96A8] italic text-xs"
+        >
+          {{ emptyMessage() }}
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

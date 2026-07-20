@@ -1,21 +1,42 @@
-import { Component, DestroyRef, inject, signal } from '@angular/core';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { Component, computed, DestroyRef, inject, signal, ViewChild } from '@angular/core';
+import { MessageService } from 'primeng/api';
 import { Divider } from 'primeng/divider';
 import { Toast } from 'primeng/toast';
+import { IconField } from 'primeng/iconfield';
+import { InputIcon } from 'primeng/inputicon';
+import { InputText } from 'primeng/inputtext';
+import { Button } from 'primeng/button';
+import { Tooltip } from 'primeng/tooltip';
+import { FormsModule } from '@angular/forms';
+import { DatePipe, NgClass } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
 import { UserService } from '../../services/users.services';
 import { ProfileDevices } from '../../interfaces/profile-devices.interface';
 import { column } from '../../data/user.data';
 import { Column } from '../../../../shared/layout/interfaces/Columns';
 import { paramsGrid } from '../../../../shared/layout/interfaces/ParamsGrid';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-
-import { DatagridUserComponent } from '../datagrid-user.component/datagrid-user.component';
+import { DatagridComponent } from '../../../../shared/components/datagrid.component/datagrid.component';
 import { UserRoleDialogComponent } from '../user-role-dialog/user-role-dialog.component';
 import { buttonOptions } from '../../../../shared/Utils/buttonsOptions';
 
 @Component({
   selector: 'app-profile-devices.component',
-  imports: [Divider, Toast, DatagridUserComponent, UserRoleDialogComponent],
+  standalone: true,
+  imports: [
+    Divider,
+    Toast,
+    DatagridComponent,
+    UserRoleDialogComponent,
+    IconField,
+    InputIcon,
+    InputText,
+    Button,
+    Tooltip,
+    FormsModule,
+    DatePipe,
+    NgClass,
+  ],
   providers: [MessageService],
   templateUrl: './profile-devices.component.html',
   styleUrl: './profile-devices.component.css',
@@ -24,6 +45,9 @@ export class ProfileDevicesComponent {
   private readonly msg = inject(MessageService);
   private readonly services = inject(UserService);
   private readonly destroyRef = inject(DestroyRef);
+
+  @ViewChild(DatagridComponent) datagrid?: DatagridComponent;
+
   public readonly data = signal<ProfileDevices[]>([]);
   public readonly totalRecords = signal<number>(0);
   public readonly loading = signal<boolean>(true);
@@ -32,6 +56,36 @@ export class ProfileDevicesComponent {
   public readonly showActionDialog = signal<boolean>(false);
   public readonly showRoleDialog = signal<boolean>(false);
   public readonly selectedUser = signal<ProfileDevices | null>(null);
+
+  // Filtros
+  public readonly userTypeFilter = signal<string>('');
+  public readonly isActiveFilter = signal<string>('');
+
+  public readonly filterParams = computed(() => {
+    const p: Record<string, any> = {};
+
+    const userType = this.userTypeFilter();
+    if (userType && userType.trim() !== '') {
+      p['userType'] = userType.trim();
+    }
+
+    const isActiveStr = this.isActiveFilter();
+    if (isActiveStr !== '') {
+      p['isActive'] = isActiveStr === 'true';
+    }
+
+    return p;
+  });
+
+  onFilterChange() {
+    this.datagrid?.onFilterChange();
+  }
+
+  limpiarFiltros() {
+    this.userTypeFilter.set('');
+    this.isActiveFilter.set('');
+    this.onFilterChange();
+  }
 
   public readonly buttonsOptions: buttonOptions[] = [
     {
@@ -50,7 +104,7 @@ export class ProfileDevicesComponent {
 
   OnParamsGrid(params: paramsGrid | null | undefined): void {
     this.params.set(params);
-    if(params)this.loadUser();
+    if (params) this.loadUser();
   }
 
   loadUser() {
@@ -74,6 +128,4 @@ export class ProfileDevicesComponent {
         },
       });
   }
-
-
 }

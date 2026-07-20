@@ -1,10 +1,12 @@
-import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, signal, ViewChild } from '@angular/core';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Divider } from 'primeng/divider';
 import { Toast } from 'primeng/toast';
 import { SevicesCardComponent } from '../sevicesCard.component/sevicesCard.component';
 import { Button } from 'primeng/button';
 import { Tooltip } from 'primeng/tooltip';
+import { PopoverModule } from 'primeng/popover';
+import { FormsModule } from '@angular/forms';
 import { ServiceProtectedService } from '../../services/ServicesProtected.services';
 import { Services } from '../../interfaces/services-protected.interface';
 import { paramsGrid } from '../../../../shared/layout/interfaces/ParamsGrid';
@@ -12,14 +14,25 @@ import { Column } from '../../../../shared/layout/interfaces/Columns';
 import { Services_Columns } from '../../data/services.data';
 import { buttonOptions } from '../../../../shared/Utils/buttonsOptions';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { DatagridComponents } from "../Datagrid.components/Datagrid.components";
-import { ConfirmDialog } from "primeng/confirmdialog";
-import { ServicesformComponent } from "../servicesform.component/servicesform.component";
-
+import { DatagridComponent } from '../../../../shared/components/datagrid.component/datagrid.component';
+import { ConfirmDialog } from 'primeng/confirmdialog';
+import { ServicesformComponent } from '../servicesform.component/servicesform.component';
 
 @Component({
   selector: 'app-services-inventory.component',
-  imports: [Divider, Toast, SevicesCardComponent, Button, Tooltip, DatagridComponents, ConfirmDialog, ServicesformComponent],
+  standalone: true,
+  imports: [
+    Divider,
+    Toast,
+    SevicesCardComponent,
+    Button,
+    Tooltip,
+    DatagridComponent,
+    ConfirmDialog,
+    ServicesformComponent,
+    PopoverModule,
+    FormsModule,
+  ],
   providers: [MessageService, ConfirmationService],
   templateUrl: './services-inventory.component.html',
   styleUrl: './services-inventory.component.css',
@@ -29,6 +42,9 @@ export class ServicesInventoryComponent {
   private readonly confirmation = inject(ConfirmationService);
   private readonly services = inject(ServiceProtectedService);
   private readonly destroyRef = inject(DestroyRef);
+
+  @ViewChild(DatagridComponent) datagrid?: DatagridComponent;
+
   public readonly data = signal<Services[]>([]);
   public readonly loading = signal<boolean>(false);
   public readonly params = signal<paramsGrid | null | undefined>(undefined);
@@ -37,6 +53,32 @@ export class ServicesInventoryComponent {
   public readonly selectedServices = signal<Services | null>(null);
   public readonly totalRecords = signal<number>(0);
   public readonly isEditMode = computed(() => this.selectedServices() !== null);
+
+  public readonly typeSelected = signal<string>('');
+
+  public readonly filterParams = computed(() => {
+    const p: Record<string, any> = {};
+    if (this.typeSelected() !== '') {
+      p['isActive'] = this.typeSelected() === 'true';
+    }
+    return p;
+  });
+
+  onFilterChange() {
+    this.datagrid?.onFilterChange();
+  }
+
+  limpiarFiltros() {
+    this.typeSelected.set('');
+    this.onFilterChange();
+  }
+
+  FormattedStatus(bool: boolean, col: string) {
+    if (col === 'status') {
+      return bool ? 'Activo' : 'Inactivo';
+    }
+    return bool ? 'Requerido' : 'No requerido';
+  }
 
   OnparamsGrid(params: paramsGrid | null | undefined): void {
     this.params.set(params);
@@ -52,7 +94,7 @@ export class ServicesInventoryComponent {
       tooltip: 'Eliminar servicio',
     },
     {
-      icon: 'pi pi-pencil  text-blue-400 opacity-80',
+      icon: 'pi pi-pencil text-blue-400 opacity-80',
       action: (services: Services) => this.openEdit(services),
       tooltip: 'Editar servicio',
     },
@@ -92,7 +134,7 @@ export class ServicesInventoryComponent {
 
   openDelete(services: Services) {
     this.confirmation.confirm({
-      message: `¿Estas seguro de eliminar la politica ${services.name}?`,
+      message: `¿Estas seguro de eliminar el servicio ${services.name}?`,
       header: 'Confirmación',
       icon: 'pi pi-exclamation-triangle text-amber-400!',
 
@@ -121,5 +163,4 @@ export class ServicesInventoryComponent {
   onserviceSaved(): void {
     this.loadServices();
   }
-
 }
