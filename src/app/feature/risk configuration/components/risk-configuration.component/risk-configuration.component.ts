@@ -35,6 +35,8 @@ export class RiskConfigurationComponent implements OnInit {
   public readonly saving = signal<boolean>(false);
   public readonly configData = signal<RiskConfigurationResponse | null>(null);
 
+  private isUpdatingWeights = false;
+
   public riskForm: FormGroup = this.fb.group({
     policyWeight: [0.6, [Validators.required, Validators.min(0), Validators.max(1)]],
     anomalyWeight: [0.4, [Validators.required, Validators.min(0), Validators.max(1)]],
@@ -45,7 +47,39 @@ export class RiskConfigurationComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.setupWeightSynchronization();
     this.loadConfig();
+  }
+
+  private setupWeightSynchronization(): void {
+    const policyControl = this.riskForm.get('policyWeight');
+    const anomalyControl = this.riskForm.get('anomalyWeight');
+
+    policyControl?.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((val) => {
+        if (this.isUpdatingWeights || val === null || val === undefined) return;
+        this.isUpdatingWeights = true;
+        let numVal = Number(val);
+        if (isNaN(numVal)) numVal = 0;
+        numVal = Math.max(0, Math.min(1, numVal));
+        const counterpart = Math.round((1 - numVal) * 100) / 100;
+        anomalyControl?.setValue(counterpart, { emitEvent: false });
+        this.isUpdatingWeights = false;
+      });
+
+    anomalyControl?.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((val) => {
+        if (this.isUpdatingWeights || val === null || val === undefined) return;
+        this.isUpdatingWeights = true;
+        let numVal = Number(val);
+        if (isNaN(numVal)) numVal = 0;
+        numVal = Math.max(0, Math.min(1, numVal));
+        const counterpart = Math.round((1 - numVal) * 100) / 100;
+        policyControl?.setValue(counterpart, { emitEvent: false });
+        this.isUpdatingWeights = false;
+      });
   }
 
   loadConfig(): void {
@@ -56,6 +90,7 @@ export class RiskConfigurationComponent implements OnInit {
       .subscribe({
         next: (data) => {
           this.configData.set(data);
+          this.isUpdatingWeights = true;
           this.riskForm.patchValue({
             policyWeight: data.policyWeight,
             anomalyWeight: data.anomalyWeight,
@@ -64,6 +99,7 @@ export class RiskConfigurationComponent implements OnInit {
             blockThreshold: data.blockThreshold,
             challengeThreshold: data.challengeThreshold,
           });
+          this.isUpdatingWeights = false;
           this.loading.set(false);
         },
         error: (err) => {
@@ -125,6 +161,7 @@ export class RiskConfigurationComponent implements OnInit {
   resetForm(): void {
     const data = this.configData();
     if (data) {
+      this.isUpdatingWeights = true;
       this.riskForm.patchValue({
         policyWeight: data.policyWeight,
         anomalyWeight: data.anomalyWeight,
@@ -133,6 +170,7 @@ export class RiskConfigurationComponent implements OnInit {
         blockThreshold: data.blockThreshold,
         challengeThreshold: data.challengeThreshold,
       });
+      this.isUpdatingWeights = false;
       this.msg.add({
         severity: 'info',
         summary: 'Restablecido',

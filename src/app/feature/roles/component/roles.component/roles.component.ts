@@ -6,6 +6,11 @@ import { Button } from 'primeng/button';
 import { PopoverModule } from 'primeng/popover';
 import { Tooltip } from 'primeng/tooltip';
 import { ConfirmDialog } from 'primeng/confirmdialog';
+import { IconField } from 'primeng/iconfield';
+import { InputIcon } from 'primeng/inputicon';
+import { InputText } from 'primeng/inputtext';
+import { FormsModule } from '@angular/forms';
+import { NgClass } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { DatagridComponent } from '../../../../shared/components/datagrid.component/datagrid.component';
@@ -28,6 +33,11 @@ import { UserRoleDialogComponent } from '../../../profile devices/components/use
     PopoverModule,
     Tooltip,
     ConfirmDialog,
+    IconField,
+    InputIcon,
+    InputText,
+    FormsModule,
+    NgClass,
     RolesFormComponent,
     UserRoleDialogComponent,
   ],
@@ -47,6 +57,58 @@ export class RolesComponent implements OnInit {
   public readonly showUserRoleDialog = signal<boolean>(false);
   public readonly selectedRole = signal<RolesResponse | null>(null);
   public readonly isEditMode = computed(() => this.selectedRole() !== null);
+
+  // Layout & Filtering signals
+  public readonly searchTerm = signal<string>('');
+  public readonly filterType = signal<'all' | 'with_users' | 'no_users'>('all');
+  public readonly viewMode = signal<'grid' | 'table'>('grid');
+
+  // Metrics
+  public readonly totalRoles = computed(() => this.data().length);
+
+  public readonly totalAssignedUsers = computed(() =>
+    this.data().reduce((acc, r) => acc + (r.usersCount || 0), 0)
+  );
+
+  public readonly rolesWithoutUsersCount = computed(
+    () => this.data().filter((r) => (r.usersCount || 0) === 0).length
+  );
+
+  public readonly mostPopularRole = computed(() => {
+    const roles = this.data();
+    if (!roles.length) return { name: 'N/A', count: 0 };
+    const maxRole = roles.reduce(
+      (max, r) => ((r.usersCount || 0) > (max.usersCount || 0) ? r : max),
+      roles[0]
+    );
+    return {
+      name: (maxRole.usersCount || 0) > 0 ? maxRole.name : 'N/A',
+      count: maxRole.usersCount || 0,
+    };
+  });
+
+  // Filtered Roles List
+  public readonly filteredRoles = computed(() => {
+    let result = this.data();
+
+    const term = this.searchTerm().toLowerCase().trim();
+    if (term) {
+      result = result.filter(
+        (r) =>
+          r.name.toLowerCase().includes(term) ||
+          (r.description && r.description.toLowerCase().includes(term))
+      );
+    }
+
+    const filter = this.filterType();
+    if (filter === 'with_users') {
+      result = result.filter((r) => (r.usersCount || 0) > 0);
+    } else if (filter === 'no_users') {
+      result = result.filter((r) => (r.usersCount || 0) === 0);
+    }
+
+    return result;
+  });
 
   ngOnInit(): void {
     this.LoadRole();
@@ -71,6 +133,11 @@ export class RolesComponent implements OnInit {
           });
         },
       });
+  }
+
+  limpiarFiltros(): void {
+    this.searchTerm.set('');
+    this.filterType.set('all');
   }
 
   buttonsOptions: buttonOptions[] = [
@@ -138,3 +205,4 @@ export class RolesComponent implements OnInit {
     this.LoadRole();
   }
 }
+

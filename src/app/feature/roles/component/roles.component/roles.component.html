@@ -1,6 +1,7 @@
 <p-toast />
 <p-confirmdialog />
 
+<!-- Header -->
 <div class="flex items-center justify-between mb-2">
   <div class="flex flex-col items-left justify-center pt-6 pl-6 ml-6">
     <h1 class="text-5xl font-bold opacity-80">Gestión de Roles y Permisos</h1>
@@ -10,58 +11,413 @@
   </div>
 
   <p-button
-    pTooltip="Crear rol"
+    pTooltip="Crear nuevo rol de usuario"
     label="Nuevo rol"
     icon="pi pi-plus"
-    class="text-white border-none text-sm font-semibold px-4 py-2"
+    class="text-white border-none text-sm font-semibold px-4 py-2 mr-6"
     [style]="{ 'background-color': '#9d72ff' }"
     (onClick)="openCreate()"
   />
 </div>
-<p-divider class="bg-[#252233]!"></p-divider>
 
-<div class="flex justify-center items-center h-full mt-20 pl-10 pr-10">
-  <app-datagrid
-    class="w-8/12"
-    [columns]="column"
-    [data]="data()"
-    [loading]="loading()"
-    [paginator]="false"
-    [lazy]="false"
-    actionsHeader="ACCIONES"
-    emptyMessage="No matching roles found."
+<p-divider class="bg-[#252233]! mb-6"></p-divider>
+
+<!-- Metric Summary Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-10 mb-8">
+  <!-- Card 1: Total Roles -->
+  <div
+    class="bg-[#1A1726] border border-[#2F2B43] rounded-xl p-5 flex items-center gap-5 hover:border-[#9D72FF]/40 hover:bg-[#232032] transition-all shadow-lg"
   >
-    <ng-template #bodyTemplate let-role>
-      <tr class="hover:bg-[#232032] transition-colors border-b border-[#2F2B43]/50 text-xs">
-        <td class="font-mono text-[11px] text-[#9a96a8] pl-6 py-4 h-10">
-          {{ role.name }}
-        </td>
-        <td class="py-4 w-100">
-          <span class="text-xs font-mono text-gray-400">{{ role.description }}</span>
-        </td>
-        <td class="py-4 text-blue-700 opacity-70 text-[15px] font-bold pl-15!">
-          {{ role.usersCount }}
-        </td>
-        <td class="py-4 text-center">
-          <div class="flex justify-center">
-            <button
-              type="button"
-              pButton
-              severity="secondary"
-              variant="outlined"
-              pTooltip="Ver acciones"
-              tooltipPosition="top"
-              (click)="op.toggle($event); selectedRole.set(role)"
-            >
-              <i class="pi pi-ellipsis-h"></i>
-            </button>
-          </div>
-        </td>
-      </tr>
-    </ng-template>
-  </app-datagrid>
+    <div
+      class="bg-[#9D72FF]/10 border border-[#9D72FF]/20 w-12 h-12 rounded-lg flex items-center justify-center shrink-0"
+    >
+      <i class="pi pi-shield text-[#9D72FF] text-xl"></i>
+    </div>
+    <div class="flex flex-col overflow-hidden">
+      <span class="text-[10px] text-[#9A96A8] font-bold uppercase tracking-widest mb-1"
+        >Total Roles</span
+      >
+      <span class="text-3xl font-black text-[#F3F3F6]">{{ totalRoles() }}</span>
+    </div>
+  </div>
+
+  <!-- Card 2: Total Usuarios Asignados -->
+  <div
+    class="bg-[#1A1726] border border-[#2F2B43] rounded-xl p-5 flex items-center gap-5 hover:border-[#3B82F6]/40 hover:bg-[#232032] transition-all shadow-lg"
+  >
+    <div
+      class="bg-[#3B82F6]/10 border border-[#3B82F6]/20 w-12 h-12 rounded-lg flex items-center justify-center shrink-0"
+    >
+      <i class="pi pi-users text-[#3B82F6] text-xl"></i>
+    </div>
+    <div class="flex flex-col overflow-hidden">
+      <span class="text-[10px] text-[#9A96A8] font-bold uppercase tracking-widest mb-1"
+        >Usuarios Asignados</span
+      >
+      <span class="text-3xl font-black text-[#3B82F6]">{{ totalAssignedUsers() }}</span>
+    </div>
+  </div>
+
+  <!-- Card 3: Rol Dominante -->
+  <div
+    class="bg-[#1A1726] border border-[#2F2B43] rounded-xl p-5 flex items-center gap-5 hover:border-[#F59E0B]/40 hover:bg-[#232032] transition-all shadow-lg"
+  >
+    <div
+      class="bg-[#F59E0B]/10 border border-[#F59E0B]/20 w-12 h-12 rounded-lg flex items-center justify-center shrink-0"
+    >
+      <i class="pi pi-star text-[#F59E0B] text-xl"></i>
+    </div>
+    <div class="flex flex-col overflow-hidden">
+      <span class="text-[10px] text-[#9A96A8] font-bold uppercase tracking-widest mb-1"
+        >Rol Más Utilizado</span
+      >
+      <div class="flex items-baseline gap-2 truncate">
+        <span class="text-xl font-bold text-[#F59E0B] truncate">{{ mostPopularRole().name }}</span>
+        @if (mostPopularRole().count > 0) {
+          <span class="text-xs text-gray-400 font-mono">({{ mostPopularRole().count }})</span>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 4: Roles Sin Usuarios -->
+  <div
+    class="bg-[#1A1726] border border-[#2F2B43] rounded-xl p-5 flex items-center gap-5 hover:border-[#EC4899]/40 hover:bg-[#232032] transition-all shadow-lg"
+  >
+    <div
+      class="bg-[#EC4899]/10 border border-[#EC4899]/20 w-12 h-12 rounded-lg flex items-center justify-center shrink-0"
+    >
+      <i class="pi pi-user-minus text-[#EC4899] text-xl"></i>
+    </div>
+    <div class="flex flex-col overflow-hidden">
+      <span class="text-[10px] text-[#9A96A8] font-bold uppercase tracking-widest mb-1"
+        >Sin Usuarios</span
+      >
+      <span class="text-3xl font-black text-[#EC4899]">{{ rolesWithoutUsersCount() }}</span>
+    </div>
+  </div>
 </div>
 
+<!-- Toolbar: Search, Filters & View Mode -->
+<div class="px-10 mb-6 flex flex-wrap items-center justify-between gap-4">
+  <!-- Left Side: Search Bar & Filter Buttons -->
+  <div class="flex flex-wrap items-center gap-3 flex-1 min-w-[300px]">
+    <!-- Search Input -->
+    <p-iconfield iconPosition="left" class="w-full sm:w-72">
+      <p-inputicon class="pi pi-search text-[#9a96a8]" />
+      <input
+        type="text"
+        pInputText
+        [ngModel]="searchTerm()"
+        (ngModelChange)="searchTerm.set($event)"
+        placeholder="Buscar por rol o descripción..."
+        class="w-full bg-[#1a1726] border border-[#2f2b43] rounded-lg pl-9 pr-4 py-2 text-xs text-[#F3F3F6] focus:border-[#9D72FF] outline-none transition-colors"
+      />
+    </p-iconfield>
+
+    <!-- Status Filter Chips -->
+    <div class="flex items-center bg-[#1A1726] border border-[#2F2B43] rounded-lg p-1 gap-1">
+      <button
+        type="button"
+        (click)="filterType.set('all')"
+        [ngClass]="{
+          'bg-[#9D72FF] text-white font-semibold': filterType() === 'all',
+          'text-gray-400 hover:text-white hover:bg-[#232032]': filterType() !== 'all'
+        }"
+        class="px-3 py-1.5 rounded-md text-xs transition-colors cursor-pointer"
+      >
+        Todos ({{ totalRoles() }})
+      </button>
+
+      <button
+        type="button"
+        (click)="filterType.set('with_users')"
+        [ngClass]="{
+          'bg-[#9D72FF] text-white font-semibold': filterType() === 'with_users',
+          'text-gray-400 hover:text-white hover:bg-[#232032]': filterType() !== 'with_users'
+        }"
+        class="px-3 py-1.5 rounded-md text-xs transition-colors cursor-pointer"
+      >
+        Con usuarios
+      </button>
+
+      <button
+        type="button"
+        (click)="filterType.set('no_users')"
+        [ngClass]="{
+          'bg-[#9D72FF] text-white font-semibold': filterType() === 'no_users',
+          'text-gray-400 hover:text-white hover:bg-[#232032]': filterType() !== 'no_users'
+        }"
+        class="px-3 py-1.5 rounded-md text-xs transition-colors cursor-pointer"
+      >
+        Sin usuarios
+      </button>
+    </div>
+
+    @if (searchTerm() || filterType() !== 'all') {
+      <button
+        type="button"
+        (click)="limpiarFiltros()"
+        class="text-xs text-gray-400 hover:text-[#9D72FF] flex items-center gap-1.5 px-2 py-1 transition-colors cursor-pointer"
+      >
+        <i class="pi pi-filter-slash text-xs"></i>
+        <span>Limpiar</span>
+      </button>
+    }
+  </div>
+
+  <!-- Right Side: View Mode Toggle -->
+  <div class="flex items-center bg-[#1A1726] border border-[#2F2B43] rounded-lg p-1 gap-1">
+    <button
+      type="button"
+      pTooltip="Vista en Tarjetas"
+      tooltipPosition="top"
+      (click)="viewMode.set('grid')"
+      [ngClass]="{
+        'bg-[#9D72FF] text-white': viewMode() === 'grid',
+        'text-gray-400 hover:text-white hover:bg-[#232032]': viewMode() !== 'grid'
+      }"
+      class="px-3 py-1.5 rounded-md text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+    >
+      <i class="pi pi-th-large"></i>
+      <span class="hidden sm:inline">Tarjetas</span>
+    </button>
+
+    <button
+      type="button"
+      pTooltip="Vista en Tabla"
+      tooltipPosition="top"
+      (click)="viewMode.set('table')"
+      [ngClass]="{
+        'bg-[#9D72FF] text-white': viewMode() === 'table',
+        'text-gray-400 hover:text-white hover:bg-[#232032]': viewMode() !== 'table'
+      }"
+      class="px-3 py-1.5 rounded-md text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+    >
+      <i class="pi pi-list"></i>
+      <span class="hidden sm:inline">Tabla</span>
+    </button>
+  </div>
+</div>
+
+<!-- Main Content Area -->
+@if (loading()) {
+  <div class="flex flex-col items-center justify-center py-20 px-10">
+    <i class="pi pi-spin pi-spinner text-4xl text-[#9D72FF] mb-4"></i>
+    <span class="text-sm text-gray-400">Cargando roles y privilegios...</span>
+  </div>
+} @else if (filteredRoles().length === 0) {
+  <!-- Empty State -->
+  <div class="px-10 mb-10">
+    <div
+      class="bg-[#1A1726] border border-[#2F2B43] rounded-xl p-12 text-center flex flex-col items-center justify-center"
+    >
+      <div
+        class="bg-[#2F2B43] w-16 h-16 rounded-full flex items-center justify-center mb-4 text-[#9D72FF]"
+      >
+        <i class="pi pi-shield text-2xl"></i>
+      </div>
+      <h3 class="text-lg font-bold text-white mb-2">No se encontraron roles</h3>
+      <p class="text-xs text-gray-400 max-w-md mb-6">
+        @if (searchTerm() || filterType() !== 'all') {
+          No hay roles que coincidan con los filtros o la búsqueda actual.
+        } @else {
+          Aún no se ha creado ningún rol en el sistema.
+        }
+      </p>
+      @if (searchTerm() || filterType() !== 'all') {
+        <button
+          type="button"
+          pButton
+          label="Limpiar filtros"
+          icon="pi pi-filter-slash"
+          class="p-button-outlined text-xs"
+          (click)="limpiarFiltros()"
+        ></button>
+      } @else {
+        <button
+          type="button"
+          pButton
+          label="Crear Primer Rol"
+          icon="pi pi-plus"
+          [style]="{ 'background-color': '#9d72ff' }"
+          (click)="openCreate()"
+        ></button>
+      }
+    </div>
+  </div>
+} @else {
+  <!-- GRID / CARDS VIEW -->
+  @if (viewMode() === 'grid') {
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 px-10 mb-10">
+      @for (role of filteredRoles(); track role.id) {
+        <div
+          class="bg-[#1A1726] border border-[#2F2B43] rounded-xl p-6 flex flex-col justify-between hover:border-[#9D72FF]/50 transition-all duration-300 shadow-xl hover:shadow-[#9D72FF]/10 group relative overflow-hidden"
+        >
+          <!-- Top Gradient Accent -->
+          <div
+            class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#9D72FF] to-[#3B82F6] opacity-60 group-hover:opacity-100 transition-opacity"
+          ></div>
+
+          <div>
+            <!-- Header of Card -->
+            <div class="flex items-start justify-between gap-3 mb-4">
+              <div class="flex items-center gap-3">
+                <div
+                  class="bg-[#2F2B43] group-hover:bg-[#9D72FF]/20 text-[#9D72FF] p-3 rounded-lg flex items-center justify-center transition-colors"
+                >
+                  <i class="pi pi-shield text-xl"></i>
+                </div>
+                <div>
+                  <h3
+                    class="text-base font-bold text-white group-hover:text-[#9D72FF] transition-colors leading-tight"
+                  >
+                    {{ role.name }}
+                  </h3>
+                  <span class="text-[11px] text-gray-500 font-mono block mt-0.5">
+                    ID: {{ role.id.substring(0, 8) }}...
+                  </span>
+                </div>
+              </div>
+
+              <!-- Quick User Count Badge -->
+              <div
+                [ngClass]="{
+                  'bg-[#10B981]/10 border-[#10B981]/30 text-[#10B981]': (role.usersCount || 0) > 0,
+                  'bg-gray-800/50 border-gray-700 text-gray-400': (role.usersCount || 0) === 0
+                }"
+                class="border px-2.5 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 shrink-0"
+              >
+                <i class="pi pi-users text-[11px]"></i>
+                <span>{{ role.usersCount || 0 }}</span>
+              </div>
+            </div>
+
+            <!-- Description -->
+            <p class="text-xs text-gray-300 leading-relaxed mb-6 line-clamp-3 min-h-[48px]">
+              {{ role.description || 'Sin descripción asignada para este rol.' }}
+            </p>
+          </div>
+
+          <!-- Bottom Footer -->
+          <div class="pt-4 border-t border-[#2F2B43]/70 flex items-center justify-between gap-2">
+            <!-- Asignar Usuarios Quick Button -->
+            <button
+              type="button"
+              (click)="openAssigment(role)"
+              class="text-xs text-[#9D72FF] hover:text-white hover:bg-[#9D72FF]/20 font-medium px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer"
+            >
+              <i class="pi pi-user-plus text-xs"></i>
+              <span>Gestionar Usuarios</span>
+            </button>
+
+            <!-- Actions Menu -->
+            <div class="flex items-center gap-1">
+              <button
+                type="button"
+                pTooltip="Editar rol"
+                tooltipPosition="top"
+                (click)="openEdit(role)"
+                class="p-2 text-gray-400 hover:text-blue-400 hover:bg-[#232032] rounded-lg transition-colors cursor-pointer"
+              >
+                <i class="pi pi-pencil text-sm"></i>
+              </button>
+
+              <button
+                type="button"
+                pTooltip="Eliminar rol"
+                tooltipPosition="top"
+                (click)="openDelete(role)"
+                class="p-2 text-gray-400 hover:text-red-400 hover:bg-[#232032] rounded-lg transition-colors cursor-pointer"
+              >
+                <i class="pi pi-trash text-sm"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- TABLE VIEW -->
+  @if (viewMode() === 'table') {
+    <div class="px-10 mb-10 w-full">
+      <app-datagrid
+        class="w-full"
+        [columns]="column"
+        [data]="filteredRoles()"
+        [loading]="loading()"
+        [paginator]="false"
+        [lazy]="false"
+        actionsHeader="ACCIONES"
+        emptyMessage="No se encontraron roles con los criterios seleccionados."
+      >
+        <ng-template #bodyTemplate let-role>
+          <tr class="hover:bg-[#232032] transition-colors border-b border-[#2F2B43]/50 text-xs">
+            <td class="py-4 pl-6">
+              <div class="flex items-center gap-2.5">
+                <div class="bg-[#9D72FF]/10 text-[#9D72FF] p-1.5 rounded-md">
+                  <i class="pi pi-shield text-xs"></i>
+                </div>
+                <span class="font-bold text-[#F3F3F6] text-xs">{{ role.name }}</span>
+              </div>
+            </td>
+            <td class="py-4">
+              <span class="text-xs text-gray-400 max-w-md block truncate">
+                {{ role.description }}
+              </span>
+            </td>
+            <td class="py-4">
+              <span
+                [ngClass]="{
+                  'bg-[#10B981]/10 text-[#10B981] border-[#10B981]/30': (role.usersCount || 0) > 0,
+                  'bg-gray-800/40 text-gray-400 border-gray-700': (role.usersCount || 0) === 0
+                }"
+                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border"
+              >
+                <i class="pi pi-users text-xs"></i>
+                <span>{{ role.usersCount || 0 }} usuarios</span>
+              </span>
+            </td>
+            <td class="py-4 text-center">
+              <div class="flex justify-center items-center gap-2">
+                <button
+                  type="button"
+                  pTooltip="Gestionar usuarios"
+                  tooltipPosition="top"
+                  (click)="openAssigment(role)"
+                  class="p-2 text-emerald-400 hover:bg-[#232032] rounded-lg transition-colors cursor-pointer"
+                >
+                  <i class="pi pi-user-plus text-xs"></i>
+                </button>
+                <button
+                  type="button"
+                  pTooltip="Editar rol"
+                  tooltipPosition="top"
+                  (click)="openEdit(role)"
+                  class="p-2 text-blue-400 hover:bg-[#232032] rounded-lg transition-colors cursor-pointer"
+                >
+                  <i class="pi pi-pencil text-xs"></i>
+                </button>
+                <button
+                  type="button"
+                  pTooltip="Eliminar rol"
+                  tooltipPosition="top"
+                  (click)="openDelete(role)"
+                  class="p-2 text-red-400 hover:bg-[#232032] rounded-lg transition-colors cursor-pointer"
+                >
+                  <i class="pi pi-trash text-xs"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </app-datagrid>
+    </div>
+  }
+}
+
+<!-- Popover for extra actions (retained for compatibility) -->
 <p-popover #op>
   <div class="grid grid-cols-2 gap-4">
     @for (item of buttonsOptions; track $index) {
@@ -77,6 +433,7 @@
   </div>
 </p-popover>
 
+<!-- Roles Form Dialog -->
 <app-roles-form
   [visible]="showActionDialog()"
   (saved)="onRoleSaved()"
@@ -84,9 +441,11 @@
   [data]="selectedRole()"
 />
 
+<!-- User Role Assignment Dialog -->
 <app-user-role-dialog
   [visible]="showUserRoleDialog()"
   (visibleChange)="showUserRoleDialog.set($event)"
   [role]="selectedRole()"
   (saved)="onRoleSaved()"
 />
+
