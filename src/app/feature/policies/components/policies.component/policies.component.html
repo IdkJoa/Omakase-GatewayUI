@@ -74,16 +74,85 @@
 
 <!-- Componente table-->
 <div class="flex justify-center items-center w-full h-full mt-6 pl-10 pr-10">
-  <app-datagrid-policies
+  <app-datagrid
     class="w-full min-h-50"
     [columns]="column"
-    [buttonOptions]="buttonsOptions"
-    (paramsGrid)="OnParamsGrid($event)"
     [data]="data()"
     [totalRecords]="totalRecords()"
     [loading]="loading()"
-  />
+    [extraParams]="filterParams()"
+    actionsHeader="ACCIONES"
+    (paramsGrid)="OnParamsGrid($event)"
+  >
+    <!-- Filtro por tipo -->
+    <div filters class="flex gap-3 mb-2 justify-end items-center w-full px-6">
+      <p-iconfield iconPosition="left">
+        <p-inputicon class="pi pi-search text-[#9a96a8]" />
+        <input
+          type="text"
+          pInputText
+          [ngModel]="typeSelected()"
+          (ngModelChange)="typeSelected.set($event)"
+          (keyup.enter)="onFilterChange()"
+          placeholder="Buscar por tipo... (Enter para buscar)"
+          class="w-85 bg-[#1a1726] border border-[#2f2b43] rounded-md pl-9 pr-4 py-2 text-xs text-[#F3F3F6] focus:border-[#9D72FF] outline-none"
+        />
+      </p-iconfield>
+      <p-button icon="pi pi-filter-slash" (onClick)="limpiarFiltros()" class="p-button-text" />
+    </div>
+
+    <!-- Row template -->
+    <ng-template #bodyTemplate let-policies>
+      <tr class="hover:bg-[#232032] transition-colors border-b border-[#2F2B43]/50 text-xs">
+        <td class="font-mono text-[11px] text-[#9a96a8] pl-6 py-4 h-10">
+          {{ policies.name }}
+        </td>
+        <td class="py-4">
+          <span class="text-xs font-mono text-gray-400">{{ policies.type }}</span>
+        </td>
+        <td class="py-4">
+          {{ policies.weight | number: '1.1-1' }}
+        </td>
+        <td class="py-4 font-bold tracking-wide">
+          <span>{{ getConditionText(policies) }}</span>
+        </td>
+        <td class="py-4 font-bold">
+          {{ policies.createdByUsername }}
+        </td>
+        <td class="py-4 text-center">
+          <div class="flex justify-center">
+            <button
+              type="button"
+              pButton
+              severity="secondary"
+              variant="outlined"
+              pTooltip="Ver acciones"
+              tooltipPosition="top"
+              (click)="op.toggle($event); selectedPolicy.set(policies)"
+            >
+              <i class="pi pi-ellipsis-h"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </app-datagrid>
 </div>
+
+<p-popover #op>
+  <div class="flex gap-4">
+    @for (item of buttonsOptions; track $index) {
+      <button
+        class="p-link hover:scale-95 hover:cursor-pointer"
+        [pTooltip]="item.tooltip || ''"
+        tooltipPosition="top"
+        (click)="item.action(selectedPolicy())"
+      >
+        <i [class]="item.icon"></i>
+      </button>
+    }
+  </div>
+</p-popover>
 
 <app-policies-form
   [visible]="showActionDialog()"

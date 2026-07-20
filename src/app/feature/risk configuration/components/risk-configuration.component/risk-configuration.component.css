@@ -1,0 +1,10 @@
+/* Custom styles for Risk Configuration Component */
+:host {
+  display: block;
+  width: 100%;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  opacity: 1;
+}

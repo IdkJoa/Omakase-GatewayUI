@@ -1,0 +1,135 @@
+<p-dialog
+  [header]="user() ? 'Asignación / Desasignación de Roles: ' + user()?.username : 'Asignación / Desasignación de Usuarios: ' + role()?.name"
+  [visible]="visible()"
+  (visibleChange)="visibleChange.emit($event)"
+  (onShow)="onShow()"
+  [modal]="true"
+  [style]="{ width: '540px' }"
+  class="p-dialog-custom"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <div class="flex flex-col gap-6 py-2">
+    <!-- MODE 1: Managing Roles for a specific USER -->
+    @if (user()) {
+      <!-- Section: Roles actualmente asignados -->
+      <div class="bg-[#232032] border border-[#2F2B43] rounded-lg p-4">
+        <h3 class="text-xs font-bold text-[#9A96A8] uppercase tracking-wider mb-3">
+          Roles Asignados Actuales
+        </h3>
+
+        @if (user()?.roles && user()!.roles.length > 0) {
+          <div class="flex flex-wrap gap-2">
+            @for (roleItem of user()!.roles; track roleItem) {
+              <div
+                class="flex items-center gap-2 bg-[#2F2B43] text-[#F3F3F6] border border-[#9D72FF]/30 px-3 py-1.5 rounded-full text-xs font-mono"
+              >
+                <span>{{ roleItem }}</span>
+                <button
+                  type="button"
+                  (click)="unassignRoleFromUser(roleItem)"
+                  [disabled]="loadingAction()"
+                  class="text-red-400 hover:text-red-300 hover:bg-red-400/20 rounded-full p-0.5 transition-colors cursor-pointer border-none bg-transparent"
+                  pTooltip="Desasignar rol"
+                  tooltipPosition="top"
+                >
+                  <i class="pi pi-times text-[10px]"></i>
+                </button>
+              </div>
+            }
+          </div>
+        } @else {
+          <p class="text-xs text-gray-500 italic">El usuario no tiene roles asignados.</p>
+        }
+      </div>
+
+      <!-- Section: Asignar nuevo rol -->
+      <div class="bg-[#232032] border border-[#2F2B43] rounded-lg p-4 flex flex-col gap-3">
+        <h3 class="text-xs font-bold text-[#9A96A8] uppercase tracking-wider">
+          Asignar Nuevo Rol
+        </h3>
+
+        <div class="flex items-center gap-3">
+          <select
+            [ngModel]="selectedRoleId()"
+            (ngModelChange)="selectedRoleId.set($event)"
+            class="flex-1 bg-[#1a1726] border border-[#2f2b43] rounded-md px-3 py-2 text-xs text-[#F3F3F6] focus:border-[#9D72FF] outline-none cursor-pointer"
+          >
+            <option value="" disabled selected>Seleccione un rol...</option>
+            @for (r of availableRoles(); track r.id) {
+              <option [value]="r.id">{{ r.name }} - {{ r.description }}</option>
+            }
+          </select>
+
+          <p-button
+            label="Asignar"
+            icon="pi pi-check"
+            [loading]="loadingAction()"
+            (onClick)="assignRoleToUser()"
+            class="text-xs"
+            [style]="{ 'background-color': '#9d72ff', border: 'none' }"
+          />
+        </div>
+      </div>
+    }
+
+    <!-- MODE 2: Managing Users for a specific ROLE -->
+    @if (role()) {
+      <div class="bg-[#232032] border border-[#2F2B43] rounded-lg p-4 flex flex-col gap-4">
+        <div class="flex flex-col">
+          <span class="text-xs font-bold text-[#9A96A8] uppercase tracking-wider mb-1">
+            Rol Seleccionado
+          </span>
+          <span class="text-sm font-semibold text-[#9D72FF]">{{ role()?.name }}</span>
+          <span class="text-xs text-gray-400">{{ role()?.description }}</span>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label class="text-xs text-[#9A96A8]">Seleccionar Usuario</label>
+          <select
+            [ngModel]="selectedUserId()"
+            (ngModelChange)="selectedUserId.set($event)"
+            class="w-full bg-[#1a1726] border border-[#2f2b43] rounded-md px-3 py-2 text-xs text-[#F3F3F6] focus:border-[#9D72FF] outline-none cursor-pointer"
+          >
+            <option value="" disabled selected>Seleccione un usuario...</option>
+            @for (u of availableUsers(); track u.id) {
+              <option [value]="u.id">{{ u.username }} ({{ u.userType }})</option>
+            }
+          </select>
+        </div>
+
+        <div class="flex justify-end gap-3 pt-2">
+          <p-button
+            label="Desasignar"
+            icon="pi pi-user-minus"
+            severity="danger"
+            variant="outlined"
+            [loading]="loadingAction()"
+            (onClick)="unassignUserFromRole()"
+            class="text-xs"
+          />
+          <p-button
+            label="Asignar"
+            icon="pi pi-user-plus"
+            [loading]="loadingAction()"
+            (onClick)="assignUserToRole()"
+            class="text-xs"
+            [style]="{ 'background-color': '#9d72ff', border: 'none' }"
+          />
+        </div>
+      </div>
+    }
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="flex justify-end gap-2 pt-2">
+      <p-button
+        label="Cerrar"
+        icon="pi pi-times"
+        severity="secondary"
+        variant="text"
+        (onClick)="close()"
+      />
+    </div>
+  </ng-template>
+</p-dialog>

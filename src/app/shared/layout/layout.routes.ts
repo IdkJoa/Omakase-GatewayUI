@@ -36,6 +36,11 @@ export const LayoutRoutes: Routes = [
         loadComponent: () => import('../../feature/roles/component/roles.component/roles.component').then(m => m.RolesComponent)
       },
       {
+        path: "risk-configuration",
+        loadComponent: () => import('../../feature/risk configuration/components/risk-configuration.component/risk-configuration.component')
+          .then(m => m.RiskConfigurationComponent)
+      },
+      {
         path: "**",
         redirectTo: "dashboard"
       }
