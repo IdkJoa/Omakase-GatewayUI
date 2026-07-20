@@ -26,8 +26,8 @@ export class RolesService {
     return this.http.delete<boolean>(`${this.baseUrl}/${id}`);
   }
 
-  AssigmentRol(idRol: string, userId:string): Observable<boolean> {
-    return this.http.post<boolean>(`${this.baseUrl}/${idRol}/users`, userId);
+  AssigmentRol(idRol: string, userId: string): Observable<boolean> {
+    return this.http.post<boolean>(`${this.baseUrl}/${idRol}/users`, { userId });
   }
 
   UnassigmentRol(idRol: string, userId:string): Observable<boolean> {

@@ -18,10 +18,11 @@
     (onClick)="openCreate()"
   ></p-button>
 </div>
-<p-divider class="bg-[#252233]! mb-6"></p-divider>
+<p-divider class="bg-[#252233]!"></p-divider>
 
-<div class="flex justify-center items-center w-full h-full mt-6 pl-10 pr-10">
+<div class="flex justify-center items-center h-full mt-20 pl-10 pr-10">
   <app-datagrid-roles
+    class="w-8/12"
     [buttonsOptions]="buttonsOptions"
     [columns]="column"
     [data]="data()"
@@ -30,10 +31,16 @@
 </div>
 
 <app-roles-form
-[visible]="showActionDialog()"
-(saved)="onRoleSaved()"
-(visibleChange)="showActionDialog.set($event)"
-[data]="selectedRole()"
- />
+  [visible]="showActionDialog()"
+  (saved)="onRoleSaved()"
+  (visibleChange)="showActionDialog.set($event)"
+  [data]="selectedRole()"
+/>
 
+<app-user-role-dialog
+  [visible]="showUserRoleDialog()"
+  (visibleChange)="showUserRoleDialog.set($event)"
+  [role]="selectedRole()"
+  (saved)="onRoleSaved()"
+/>
 

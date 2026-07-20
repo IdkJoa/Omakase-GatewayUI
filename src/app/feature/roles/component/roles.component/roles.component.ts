@@ -13,10 +13,11 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Tooltip } from "primeng/tooltip";
 import { ConfirmDialog } from "primeng/confirmdialog";
 import { RolesFormComponent } from "../roles-form.component/roles-form.component";
+import { UserRoleDialogComponent } from '../../../profile devices/components/user-role-dialog/user-role-dialog.component';
 
 @Component({
   selector: 'app-roles',
-  imports: [Divider, Toast, Button, DatagridRolesComponent, Tooltip, ConfirmDialog, RolesFormComponent],
+  imports: [Divider, Toast, Button, DatagridRolesComponent, Tooltip, ConfirmDialog, RolesFormComponent, UserRoleDialogComponent],
   providers: [MessageService, ConfirmationService],
   templateUrl: './roles.component.html',
   styleUrl: './roles.component.css',
@@ -30,6 +31,7 @@ export class RolesComponent implements OnInit{
   private readonly destroyRef = inject(DestroyRef);
   public readonly column: Column[] = ROLES_COLUMN;
   public readonly showActionDialog = signal<boolean>(false);
+  public readonly showUserRoleDialog = signal<boolean>(false);
   public readonly selectedRole = signal<RolesResponse | null>(null);
   public readonly isEditMode = computed(() => this.selectedRole() !== null);
 
@@ -69,19 +71,15 @@ export class RolesComponent implements OnInit{
       tooltip: 'Editar rol'
     },
     {
-      icon: 'pi pi-times text-red-400 opacity-80',
+      icon: 'pi pi-user-plus text-emerald-400 opacity-80',
       action: (role: RolesResponse) => this.openAssigment(role),
-      tooltip: 'Quitar asignación'
-    },
-    {
-      icon: 'pi pi-plus  text-emerald-400 opacity-80',
-      action: (role: RolesResponse) => this.openAssigment(role),
-      tooltip: 'Agregar asignación'
+      tooltip: 'Asignar / Desasignar Usuarios'
     },
   ];
 
   openAssigment(role: RolesResponse){
     this.selectedRole.set(role);
+    this.showUserRoleDialog.set(true);
   }
 
   openCreate() {

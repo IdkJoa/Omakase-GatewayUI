@@ -29,5 +29,10 @@ export const routes = [
     title: "Services Inventory",
     icon: "pi pi-warehouse"
   },
-
+  {
+    path: "risk-configuration",
+    title: "Risk Configuration",
+    icon: "pi pi-sliders-h"
+  },
 ]
+
