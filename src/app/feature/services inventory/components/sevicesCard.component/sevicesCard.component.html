@@ -1,18 +1,70 @@
-<section class="grid grid-cols-3 gap-10 mb-10 p-5">
-
-  <div class="bg-[#1A1726] border border-[#2F2B43] rounded-xl p-5 flex flex-col pl-6  gap-2 hover:bg-[#232032] transition-colors">
-    <p class="text-lg text-white/50 font-semibold">Total Servicios</p>
-    <p class="font-bold text-4xl text-[#753087]">{{data()?.totalRecords || 0}}</p>
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+  <!-- Total Servicios -->
+  <div
+    class="bg-[#1A1726] border border-[#2F2B43] rounded-xl p-5 flex items-center gap-5 hover:border-[#9D72FF]/40 hover:bg-[#232032] transition-all shadow-lg"
+  >
+    <div
+      class="bg-[#9D72FF]/10 border border-[#9D72FF]/20 w-12 h-12 rounded-lg flex items-center justify-center shrink-0"
+    >
+      <i class="pi pi-server text-[#9D72FF] text-xl"></i>
+    </div>
+    <div class="flex flex-col overflow-hidden">
+      <span class="text-[10px] text-[#9A96A8] font-bold uppercase tracking-widest mb-1"
+        >Total Servicios</span
+      >
+      <span class="text-3xl font-black text-[#F3F3F6]">{{ totalServicesCount() }}</span>
+    </div>
   </div>
 
-  <div class="bg-[#1A1726] border border-[#2F2B43] rounded-xl p-5 flex flex-col pl-6  gap-2 hover:bg-[#232032] transition-colors">
-    <p class="text-lg text-white/50 font-semibold">Servicios Activos</p>
-    <p class="font-bold text-4xl text-emerald-500/80">{{ServicesActive() || 0}}</p>
+  <!-- Servicios Activos -->
+  <div
+    class="bg-[#1A1726] border border-[#2F2B43] rounded-xl p-5 flex items-center gap-5 hover:border-[#10B981]/40 hover:bg-[#232032] transition-all shadow-lg"
+  >
+    <div
+      class="bg-[#10B981]/10 border border-[#10B981]/20 w-12 h-12 rounded-lg flex items-center justify-center shrink-0"
+    >
+      <i class="pi pi-check-circle text-[#10B981] text-xl"></i>
+    </div>
+    <div class="flex flex-col overflow-hidden">
+      <span class="text-[10px] text-[#9A96A8] font-bold uppercase tracking-widest mb-1"
+        >Activos</span
+      >
+      <span class="text-3xl font-black text-[#10B981]">{{ ServicesActive() }}</span>
+    </div>
   </div>
 
-  <div class="bg-[#1A1726] border border-[#2F2B43] rounded-xl p-5 flex flex-col pl-6  gap-2 hover:bg-[#232032] transition-colors">
-    <p class="text-lg text-white/50 font-semibold">Servicios Inactivos</p>
-    <p class="font-bold text-4xl text-red-500/70">{{ServicesInactive() || 0}}</p>
+  <!-- Servicios Inactivos -->
+  <div
+    class="bg-[#1A1726] border border-[#2F2B43] rounded-xl p-5 flex items-center gap-5 hover:border-[#EF4444]/40 hover:bg-[#232032] transition-all shadow-lg"
+  >
+    <div
+      class="bg-[#EF4444]/10 border border-[#EF4444]/20 w-12 h-12 rounded-lg flex items-center justify-center shrink-0"
+    >
+      <i class="pi pi-power-off text-[#EF4444] text-xl"></i>
+    </div>
+    <div class="flex flex-col overflow-hidden">
+      <span class="text-[10px] text-[#9A96A8] font-bold uppercase tracking-widest mb-1"
+        >Inactivos</span
+      >
+      <span class="text-3xl font-black text-[#EF4444]">{{ ServicesInactive() }}</span>
+    </div>
   </div>
 
+  <!-- Requieren Autenticación -->
+  <div
+    class="bg-[#1A1726] border border-[#2F2B43] rounded-xl p-5 flex items-center gap-5 hover:border-[#3B82F6]/40 hover:bg-[#232032] transition-all shadow-lg"
+  >
+    <div
+      class="bg-[#3B82F6]/10 border border-[#3B82F6]/20 w-12 h-12 rounded-lg flex items-center justify-center shrink-0"
+    >
+      <i class="pi pi-lock text-[#3B82F6] text-xl"></i>
+    </div>
+    <div class="flex flex-col overflow-hidden">
+      <span class="text-[10px] text-[#9A96A8] font-bold uppercase tracking-widest mb-1"
+        >Con Autenticación</span
+      >
+      <span class="text-3xl font-black text-[#3B82F6]">{{ ServicesAuthRequired() }}</span>
+    </div>
+  </div>
 </section>
+
