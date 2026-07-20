@@ -16,24 +16,77 @@
     class="text-white border-none text-sm font-semibold px-4 py-2"
     [style]="{ 'background-color': '#9d72ff' }"
     (onClick)="openCreate()"
-  ></p-button>
+  />
 </div>
-<p-divider class="bg-[#252233]! mb-6"></p-divider>
+<p-divider class="bg-[#252233]!"></p-divider>
 
-<div class="flex justify-center items-center w-full h-full mt-6 pl-10 pr-10">
-  <app-datagrid-roles
-    [buttonsOptions]="buttonsOptions"
+<div class="flex justify-center items-center h-full mt-20 pl-10 pr-10">
+  <app-datagrid
+    class="w-8/12"
     [columns]="column"
     [data]="data()"
     [loading]="loading()"
-  />
+    [paginator]="false"
+    [lazy]="false"
+    actionsHeader="ACCIONES"
+    emptyMessage="No matching roles found."
+  >
+    <ng-template #bodyTemplate let-role>
+      <tr class="hover:bg-[#232032] transition-colors border-b border-[#2F2B43]/50 text-xs">
+        <td class="font-mono text-[11px] text-[#9a96a8] pl-6 py-4 h-10">
+          {{ role.name }}
+        </td>
+        <td class="py-4 w-100">
+          <span class="text-xs font-mono text-gray-400">{{ role.description }}</span>
+        </td>
+        <td class="py-4 text-blue-700 opacity-70 text-[15px] font-bold pl-15!">
+          {{ role.usersCount }}
+        </td>
+        <td class="py-4 text-center">
+          <div class="flex justify-center">
+            <button
+              type="button"
+              pButton
+              severity="secondary"
+              variant="outlined"
+              pTooltip="Ver acciones"
+              tooltipPosition="top"
+              (click)="op.toggle($event); selectedRole.set(role)"
+            >
+              <i class="pi pi-ellipsis-h"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </app-datagrid>
 </div>
 
+<p-popover #op>
+  <div class="grid grid-cols-2 gap-4">
+    @for (item of buttonsOptions; track $index) {
+      <button
+        class="p-link hover:scale-95 hover:cursor-pointer"
+        [pTooltip]="item.tooltip || ''"
+        tooltipPosition="top"
+        (click)="item.action(selectedRole())"
+      >
+        <i [class]="item.icon"></i>
+      </button>
+    }
+  </div>
+</p-popover>
+
 <app-roles-form
-[visible]="showActionDialog()"
-(saved)="onRoleSaved()"
-(visibleChange)="showActionDialog.set($event)"
-[data]="selectedRole()"
- />
+  [visible]="showActionDialog()"
+  (saved)="onRoleSaved()"
+  (visibleChange)="showActionDialog.set($event)"
+  [data]="selectedRole()"
+/>
 
-
+<app-user-role-dialog
+  [visible]="showUserRoleDialog()"
+  (visibleChange)="showUserRoleDialog.set($event)"
+  [role]="selectedRole()"
+  (saved)="onRoleSaved()"
+/>

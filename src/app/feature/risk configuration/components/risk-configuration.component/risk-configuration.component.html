@@ -1,0 +1,260 @@
+<p-toast />
+
+<div class="flex flex-col gap-6 p-6">
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-4xl font-bold opacity-90 text-[#F3F3F6]">Configuración de Motor de Riesgo</h1>
+      <p class="text-sm mt-2 opacity-80 text-gray-400">
+        Ajusta las ponderaciones, penalizaciones de arranque en frío (Cold Start) y los umbrales de evaluación de riesgo.
+      </p>
+    </div>
+  </div>
+
+  <p-divider class="bg-[#252233]! my-2"></p-divider>
+
+  <!-- Summary Metadata Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="bg-[#1A1726] border border-[#2F2B43] rounded-xl p-5 flex items-center gap-5 hover:bg-[#232032] transition-colors shadow-lg">
+      <div class="bg-[#9D72FF]/10 border border-[#9D72FF]/20 w-12 h-12 rounded-lg flex items-center justify-center">
+        <i class="pi pi-sliders-h text-[#9D72FF] text-xl"></i>
+      </div>
+      <div class="flex flex-col overflow-hidden">
+        <span class="text-[10px] text-[#9A96A8] font-bold uppercase tracking-widest mb-1">ID Configuración</span>
+        <span class="text-xs font-mono text-[#F3F3F6] truncate" [title]="configData()?.id || 'Cargando...'">
+          {{ configData()?.id || '—' }}
+        </span>
+      </div>
+    </div>
+
+    <div class="bg-[#1A1726] border border-[#2F2B43] rounded-xl p-5 flex items-center gap-5 hover:bg-[#232032] transition-colors shadow-lg">
+      <div class="bg-[#10B981]/10 border border-[#10B981]/20 w-12 h-12 rounded-lg flex items-center justify-center">
+        <i class="pi pi-clock text-[#10B981] text-xl"></i>
+      </div>
+      <div class="flex flex-col">
+        <span class="text-[10px] text-[#9A96A8] font-bold uppercase tracking-widest mb-1">Última Actualización</span>
+        <span class="text-xs font-mono text-[#10B981]">
+          {{ configData()?.updatedAt ? (configData()?.updatedAt | date:'dd/MM/yyyy HH:mm:ss') : '—' }}
+        </span>
+      </div>
+    </div>
+
+    <div class="bg-[#1A1726] border border-[#2F2B43] rounded-xl p-5 flex items-center gap-5 hover:bg-[#232032] transition-colors shadow-lg">
+      <div class="bg-[#3B82F6]/10 border border-[#3B82F6]/20 w-12 h-12 rounded-lg flex items-center justify-center">
+        <i class="pi pi-shield text-[#3B82F6] text-xl"></i>
+      </div>
+      <div class="flex flex-col">
+        <span class="text-[10px] text-[#9A96A8] font-bold uppercase tracking-widest mb-1">Estado del Motor</span>
+        <span class="text-xs font-bold text-[#3B82F6] flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-[#3B82F6] animate-pulse"></span> Activo
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form & Interactive Visual Panels -->
+  <form [formGroup]="riskForm" (ngSubmit)="saveConfig()" class="flex flex-col gap-6">
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+      <!-- Section 1: Ponderación de Factores (Weights) -->
+      <div class="bg-[#1A1726] border border-[#2F2B43] rounded-xl p-6 shadow-xl flex flex-col gap-5">
+        <div class="flex items-center gap-3 border-b border-[#2F2B43] pb-4">
+          <div class="w-9 h-9 rounded-lg bg-[#9D72FF]/10 flex items-center justify-center text-[#9D72FF]">
+            <i class="pi pi-[#9D72FF] pi-percentage text-lg"></i>
+          </div>
+          <div>
+            <h2 class="text-base font-bold text-[#F3F3F6]">Ponderación de Factores</h2>
+            <p class="text-xs text-[#9A96A8]">Define el peso relativo otorgado a las políticas vs anomalías.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Policy Weight -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-semibold text-[#9A96A8]">Peso de Políticas (policyWeight)</label>
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              max="1"
+              formControlName="policyWeight"
+              class="w-full bg-[#1a1726] border border-[#2f2b43] rounded-lg px-3 py-2 text-xs text-[#F3F3F6] focus:border-[#9D72FF] outline-none"
+            />
+            @if (riskForm.get('policyWeight')?.invalid && riskForm.get('policyWeight')?.touched) {
+              <span class="text-[11px] text-red-400">Valor requerido entre 0 y 1</span>
+            }
+          </div>
+
+          <!-- Anomaly Weight -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-semibold text-[#9A96A8]">Peso de Anomalías (anomalyWeight)</label>
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              max="1"
+              formControlName="anomalyWeight"
+              class="w-full bg-[#1a1726] border border-[#2f2b43] rounded-lg px-3 py-2 text-xs text-[#F3F3F6] focus:border-[#9D72FF] outline-none"
+            />
+            @if (riskForm.get('anomalyWeight')?.invalid && riskForm.get('anomalyWeight')?.touched) {
+              <span class="text-[11px] text-red-400">Valor requerido entre 0 y 1</span>
+            }
+          </div>
+        </div>
+
+        <!-- Visual Distribution Bar -->
+        <div class="bg-[#232032] border border-[#2F2B43] rounded-lg p-4 flex flex-col gap-2">
+          <div class="flex justify-between text-xs font-mono">
+            <span class="text-[#9D72FF]">Políticas: {{ (riskForm.value.policyWeight || 0) * 100 | number:'1.0-1' }}%</span>
+            <span class="text-[#3B82F6]">Anomalías: {{ (riskForm.value.anomalyWeight || 0) * 100 | number:'1.0-1' }}%</span>
+          </div>
+          <div class="w-full h-3 bg-[#1A1726] rounded-full overflow-hidden flex border border-[#2F2B43]">
+            <div
+              class="h-full bg-gradient-to-r from-[#9D72FF] to-[#7B42FF] transition-all duration-300"
+              [style.width.%]="(riskForm.value.policyWeight || 0) * 100"
+            ></div>
+            <div
+              class="h-full bg-gradient-to-r from-[#3B82F6] to-[#1D4ED8] transition-all duration-300"
+              [style.width.%]="(riskForm.value.anomalyWeight || 0) * 100"
+            ></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Umbrales de Seguridad (Thresholds) -->
+      <div class="bg-[#1A1726] border border-[#2F2B43] rounded-xl p-6 shadow-xl flex flex-col gap-5">
+        <div class="flex items-center gap-3 border-b border-[#2F2B43] pb-4">
+          <div class="w-9 h-9 rounded-lg bg-[#F59E0B]/10 flex items-center justify-center text-[#F59E0B]">
+            <i class="pi pi-exclamation-triangle text-lg"></i>
+          </div>
+          <div>
+            <h2 class="text-base font-bold text-[#F3F3F6]">Umbrales de Seguridad</h2>
+            <p class="text-xs text-[#9A96A8]">Puntuaciones para desencadenar acciones de desafío o bloqueo.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Challenge Threshold -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-semibold text-[#9A96A8]">Umbral Desafío (challengeThreshold)</label>
+            <input
+              type="number"
+              step="0.1"
+              min="0"
+              max="100"
+              formControlName="challengeThreshold"
+              class="w-full bg-[#1a1726] border border-[#2f2b43] rounded-lg px-3 py-2 text-xs text-[#F3F3F6] focus:border-[#F59E0B] outline-none"
+            />
+            @if (riskForm.get('challengeThreshold')?.invalid && riskForm.get('challengeThreshold')?.touched) {
+              <span class="text-[11px] text-red-400">Valor requerido entre 0 y 100</span>
+            }
+          </div>
+
+          <!-- Block Threshold -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-semibold text-[#9A96A8]">Umbral Bloqueo (blockThreshold)</label>
+            <input
+              type="number"
+              step="0.1"
+              min="0"
+              max="100"
+              formControlName="blockThreshold"
+              class="w-full bg-[#1a1726] border border-[#2f2b43] rounded-lg px-3 py-2 text-xs text-[#F3F3F6] focus:border-[#EF4444] outline-none"
+            />
+            @if (riskForm.get('blockThreshold')?.invalid && riskForm.get('blockThreshold')?.touched) {
+              <span class="text-[11px] text-red-400">Valor requerido entre 0 y 100</span>
+            }
+          </div>
+        </div>
+
+        <!-- Visual Risk Zones Bar -->
+        <div class="bg-[#232032] border border-[#2F2B43] rounded-lg p-4 flex flex-col gap-2">
+          <div class="flex justify-between text-[11px] font-mono">
+            <span class="text-[#10B981]">ALLOW (0 - {{ riskForm.value.challengeThreshold }})</span>
+            <span class="text-[#F59E0B]">CHALLENGE ({{ riskForm.value.challengeThreshold }} - {{ riskForm.value.blockThreshold }})</span>
+            <span class="text-[#EF4444]">BLOCK ({{ riskForm.value.blockThreshold }}+)</span>
+          </div>
+          <div class="w-full h-3 bg-[#1A1726] rounded-full overflow-hidden flex border border-[#2F2B43]">
+            <div
+              class="h-full bg-[#10B981] transition-all duration-300"
+              [style.width.%]="riskForm.value.challengeThreshold"
+            ></div>
+            <div
+              class="h-full bg-[#F59E0B] transition-all duration-300"
+              [style.width.%]="(riskForm.value.blockThreshold || 0) - (riskForm.value.challengeThreshold || 0)"
+            ></div>
+            <div
+              class="h-full bg-[#EF4444] transition-all duration-300"
+              [style.width.%]="100 - (riskForm.value.blockThreshold || 0)"
+            ></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Section 3: Cold Start Parameters -->
+    <div class="bg-[#1A1726] border border-[#2F2B43] rounded-xl p-6 shadow-xl flex flex-col gap-5">
+      <div class="flex items-center gap-3 border-b border-[#2F2B43] pb-4">
+        <div class="w-9 h-9 rounded-lg bg-[#3B82F6]/10 flex items-center justify-center text-[#3B82F6]">
+          <i class="pi pi-snowflake text-lg"></i>
+        </div>
+        <div>
+          <h2 class="text-base font-bold text-[#F3F3F6]">Parámetros Cold Start (Arranque en Frío)</h2>
+          <p class="text-xs text-[#9A96A8]">Penalizaciones aplicadas a entidades o dispositivos sin historial previo suficiente.</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Cold Start Penalty -->
+        <div class="flex flex-col gap-1.5">
+          <label class="text-xs font-semibold text-[#9A96A8]">Penalización Cold Start (coldStartPenalty)</label>
+          <input
+            type="number"
+            step="0.1"
+            min="0"
+            formControlName="coldStartPenalty"
+            class="w-full bg-[#1a1726] border border-[#2f2b43] rounded-lg px-3 py-2 text-xs text-[#F3F3F6] focus:border-[#9D72FF] outline-none"
+          />
+          <p class="text-[11px] text-[#9A96A8]">Puntos adicionales de riesgo agregados durante el período cold start.</p>
+        </div>
+
+        <!-- Cold Start N -->
+        <div class="flex flex-col gap-1.5">
+          <label class="text-xs font-semibold text-[#9A96A8]">Número de Muestras N (coldStartN)</label>
+          <input
+            type="number"
+            step="1"
+            min="0"
+            formControlName="coldStartN"
+            class="w-full bg-[#1a1726] border border-[#2f2b43] rounded-lg px-3 py-2 text-xs text-[#F3F3F6] focus:border-[#9D72FF] outline-none"
+          />
+          <p class="text-[11px] text-[#9A96A8]">Cantidad de eventos requeridos para superar la etapa cold start.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons Bar -->
+    <div class="flex justify-end gap-4 pt-2">
+      <p-button
+        type="button"
+        label="Restablecer"
+        icon="pi pi-refresh"
+        severity="secondary"
+        variant="outlined"
+        (onClick)="resetForm()"
+        class="text-xs"
+      />
+      <p-button
+        type="submit"
+        label="Guardar Configuración"
+        icon="pi pi-check"
+        [loading]="saving()"
+        class="text-xs"
+        [style]="{ 'background-color': '#9d72ff', border: 'none' }"
+      />
+    </div>
+
+  </form>
+</div>

@@ -1,13 +1,15 @@
 <p-toast />
- <p-confirmdialog />
+<p-confirmdialog />
 
-<div class="flex items-center justify-between mb-2 pt-6 ">
-<div class="flex flex-col  ml-6">
-  <h1 class="text-5xl font-bold opacity-80">Gestión de Servicios Protegidos</h1>
-  <p class="text-muted-color mt-2.5 opacity-90 text-gray-400 ">Administra el inventario de recursos y endpoints enrutados bajo la arquitectura.</p>
-</div>
+<div class="flex items-center justify-between mb-2 pt-6">
+  <div class="flex flex-col ml-6">
+    <h1 class="text-5xl font-bold opacity-80">Gestión de Servicios Protegidos</h1>
+    <p class="text-muted-color mt-2.5 opacity-90 text-gray-400">
+      Administra el inventario de recursos y endpoints enrutados bajo la arquitectura.
+    </p>
+  </div>
 
-<p-button
+  <p-button
     tooltipPosition="left"
     pTooltip="Agregar servicio"
     label="Nuevo Servicio"
@@ -15,27 +17,93 @@
     class="text-white border-none text-sm font-semibold px-4 py-2"
     [style]="{ 'background-color': '#9d72ff' }"
     (onClick)="openCreate()"
-  ></p-button>
+  />
 </div>
 <p-divider class="bg-[#252233]! mb-6"></p-divider>
 
 <main class="flex flex-col gap-2 pr-10 pl-10">
-<app-sevices-card/>
+  <app-sevices-card />
 
-<app-datagrid-services
-[data]="data()"
-class="w-full min-h-50"
-[loading]="loading()"
-[buttonOptions]="buttonsOptions"
-(paramsGrid)="OnparamsGrid($event)"
-[columns]="column"
-[totalRecords]="totalRecords()"
-/>
+  <app-datagrid
+    class="w-full min-h-50"
+    [columns]="column"
+    [data]="data()"
+    [totalRecords]="totalRecords()"
+    [loading]="loading()"
+    [extraParams]="filterParams()"
+    actionsHeader="ACCIONES"
+    (paramsGrid)="OnparamsGrid($event)"
+  >
+    <!-- Filtro por estado -->
+    <div filters class="flex gap-3 mb-2 justify-end items-center w-full px-6">
+      <select
+        [ngModel]="typeSelected()"
+        (ngModelChange)="typeSelected.set($event); onFilterChange()"
+        class="w-85 bg-[#1a1726] border border-[#2f2b43] rounded-md px-3 py-2 text-xs text-[#F3F3F6] focus:border-[#9D72FF] outline-none cursor-pointer"
+      >
+        <option [disabled]="true" [selected]="true" value="">Buscar por estado...</option>
+        <option value="true">Activo</option>
+        <option value="false">Inactivo</option>
+      </select>
+      <p-button icon="pi pi-filter-slash" (onClick)="limpiarFiltros()" class="p-button-text" />
+    </div>
+
+    <!-- Row template -->
+    <ng-template #bodyTemplate let-services>
+      <tr class="hover:bg-[#232032] transition-colors border-b border-[#2F2B43]/50 text-xs">
+        <td class="font-mono text-[11px] text-[#9a96a8] pl-6 py-4 h-10">
+          {{ services.name }}
+        </td>
+        <td class="py-4">
+          {{ services.upstreamUrl }}
+        </td>
+        <td class="py-4 font-bold tracking-wide">
+          <span>{{ FormattedStatus(services.requiresAuth, 'required') }}</span>
+        </td>
+        <td class="py-4 font-bold">
+          {{ FormattedStatus(services.isActive, 'status') }}
+        </td>
+        <td class="py-4 font-bold">
+          {{ services.associatedPoliciesCount }}
+        </td>
+        <td class="py-4 text-center">
+          <div class="flex justify-center pr-6">
+            <button
+              type="button"
+              pButton
+              severity="secondary"
+              variant="outlined"
+              pTooltip="Ver acciones"
+              tooltipPosition="top"
+              (click)="op.toggle($event); selectedServices.set(services)"
+            >
+              <i class="pi pi-ellipsis-h"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </app-datagrid>
 </main>
 
+<p-popover #op>
+  <div class="flex gap-4">
+    @for (item of buttonsOptions; track $index) {
+      <button
+        class="p-link hover:scale-95 hover:cursor-pointer"
+        [pTooltip]="item.tooltip || ''"
+        tooltipPosition="top"
+        (click)="item.action(selectedServices())"
+      >
+        <i [class]="item.icon"></i>
+      </button>
+    }
+  </div>
+</p-popover>
+
 <app-servicesform
-[visible]="showActionDialog()"
-(saved)="onserviceSaved()"
-(visibleChange)="showActionDialog.set($event)"
-[ServicesData]="selectedServices()"
+  [visible]="showActionDialog()"
+  (saved)="onserviceSaved()"
+  (visibleChange)="showActionDialog.set($event)"
+  [ServicesData]="selectedServices()"
 />

@@ -1,32 +1,58 @@
-import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, signal, ViewChild } from '@angular/core';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Divider } from 'primeng/divider';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { Toast } from 'primeng/toast';
 import { Tooltip } from 'primeng/tooltip';
 import { Button } from 'primeng/button';
+import { PopoverModule } from 'primeng/popover';
+import { IconField } from 'primeng/iconfield';
+import { InputIcon } from 'primeng/inputicon';
+import { InputText } from 'primeng/inputtext';
+import { FormsModule } from '@angular/forms';
+import { DecimalPipe } from '@angular/common';
+
 import { PoliciesService } from '../../services/Policies-services';
 import { Policies } from '../../interfaces/policies.interface';
 import { Column } from '../../../../shared/layout/interfaces/Columns';
 import { Policies_Columns } from '../../data/data';
 import { paramsGrid } from '../../../../shared/layout/interfaces/ParamsGrid';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { DatagridPoliciesComponent } from '../datagrid-policies.component/datagrid-policies.component';
+import { DatagridComponent } from '../../../../shared/components/datagrid.component/datagrid.component';
 import { buttonOptions } from '../../../../shared/Utils/buttonsOptions';
-import { PoliciesFormComponent } from "../policies-form.component/policies-form.component";
+import { PoliciesFormComponent } from '../policies-form.component/policies-form.component';
+import { getConditionText } from '../../../../shared/Utils/function.datagrid';
 
 @Component({
   selector: 'app-policies.component',
-  imports: [Divider, Toast, Tooltip, ConfirmDialog, Button, DatagridPoliciesComponent, PoliciesFormComponent],
+  standalone: true,
+  imports: [
+    Divider,
+    Toast,
+    Tooltip,
+    ConfirmDialog,
+    Button,
+    DatagridComponent,
+    PoliciesFormComponent,
+    PopoverModule,
+    IconField,
+    InputIcon,
+    InputText,
+    FormsModule,
+    DecimalPipe,
+  ],
   providers: [MessageService, ConfirmationService],
   templateUrl: './policies.component.html',
   styleUrl: './policies.component.css',
 })
-export class PoliciesComponent  {
+export class PoliciesComponent {
   private readonly msg = inject(MessageService);
   private readonly confirmation = inject(ConfirmationService);
   private readonly services = inject(PoliciesService);
   private readonly destroyRef = inject(DestroyRef);
+
+  @ViewChild(DatagridComponent) datagrid?: DatagridComponent;
+
   public readonly data = signal<Policies[]>([]);
   public readonly totalRecords = signal<number>(0);
   public readonly loading = signal<boolean>(true);
@@ -35,6 +61,27 @@ export class PoliciesComponent  {
   public readonly showActionDialog = signal<boolean>(false);
   public readonly selectedPolicy = signal<Policies | null>(null);
   public readonly isEditMode = computed(() => this.selectedPolicy() !== null);
+
+  public readonly typeSelected = signal<string>('');
+
+  getConditionText = getConditionText;
+
+  public readonly filterParams = computed(() => {
+    const p: Record<string, any> = {};
+    if (this.typeSelected()) {
+      p['type'] = this.typeSelected();
+    }
+    return p;
+  });
+
+  onFilterChange() {
+    this.datagrid?.onFilterChange();
+  }
+
+  limpiarFiltros() {
+    this.typeSelected.set('');
+    this.onFilterChange();
+  }
 
   OnParamsGrid(params: paramsGrid | null | undefined): void {
     this.params.set(params);
@@ -47,18 +94,14 @@ export class PoliciesComponent  {
     {
       icon: 'pi pi-trash text-red-400 opacity-80',
       action: (policies: Policies) => this.openDelete(policies),
-      tooltip: 'Eliminar política'
+      tooltip: 'Eliminar política',
     },
     {
-      icon: 'pi pi-pencil  text-blue-400 opacity-80',
+      icon: 'pi pi-pencil text-blue-400 opacity-80',
       action: (policies: Policies) => this.openEdit(policies),
-      tooltip: 'Editar política'
+      tooltip: 'Editar política',
     },
   ];
-
-  // ngOnInit(): void {
-  //   this.LoadPolicies();
-  // }
 
   LoadPolicies() {
     this.loading.set(true);
@@ -87,7 +130,7 @@ export class PoliciesComponent  {
     this.showActionDialog.set(true);
   }
 
-  openCreate(){
+  openCreate() {
     this.selectedPolicy.set(null);
     this.showActionDialog.set(true);
   }
@@ -124,11 +167,6 @@ export class PoliciesComponent  {
     this.LoadPolicies();
   }
 
-  getActiveRecord() {
-    const active = 0;
-    const inactives = 0;
-  }
-
-  public activePolicies = computed(() => this.data().filter(p => p.isActive).length);
-  public inactivePolicies = computed(() => this.data().filter(p => !p.isActive).length);
+  public activePolicies = computed(() => this.data().filter((p) => p.isActive).length);
+  public inactivePolicies = computed(() => this.data().filter((p) => !p.isActive).length);
 }
