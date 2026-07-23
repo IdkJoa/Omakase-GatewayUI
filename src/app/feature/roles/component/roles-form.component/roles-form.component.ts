@@ -8,6 +8,7 @@ import { InputText } from 'primeng/inputtext';
 import { Textarea} from 'primeng/textarea';
 import { Button } from "primeng/button";
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-roles-form',
@@ -76,7 +77,7 @@ export class RolesFormComponent {
             this.saved.emit();
             this.close();
           },
-          error: (err) => {
+          error: (err: HttpErrorResponse) => {
             this.msg.add({
               severity: "error",
               summary: "Error",
@@ -85,15 +86,27 @@ export class RolesFormComponent {
           }
         });
     } else {
-      // De acuerdo a las APIs, la edición se maneja recreando o no está soportada (el backend tiene POST y DELETE).
-      // Si la API no soporta PUT, podemos informar o desactivar el edit. Para robustez de la UI, mostramos info
-      // ya que la historia solo exige crear (AUDITOR) y asignar.
-      this.msg.add({
-        severity: "info",
-        summary: "Info",
-        detail: "La edición de roles no está soportada por el backend en este Sprint. Recree el rol si es necesario."
-      });
-      this.close();
+      const id = this.data()!.id;
+      this.services.updateRole(id, role)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: () => {
+            this.msg.add({
+              severity: "success",
+              summary: "Actualizado",
+              detail: "Rol actualizado con éxito"
+            });
+            this.saved.emit();
+            this.close();
+          },
+          error: (err: HttpErrorResponse) => {
+            this.msg.add({
+              severity: "error",
+              summary: "Error",
+              detail: err.error?.message || "Error al actualizar el rol"
+            });
+          }
+        });
     }
   }
 

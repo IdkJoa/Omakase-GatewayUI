@@ -5,6 +5,7 @@ import { Tooltip } from 'primeng/tooltip';
 import { FormsModule } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { HttpErrorResponse } from '@angular/common/http';
 
 import { RolesService } from '../../../roles/services/roles.service';
 import { UserService } from '../../services/users.services';
@@ -99,7 +100,7 @@ export class UserRoleDialogComponent {
           this.selectedRoleId.set('');
           this.saved.emit();
         },
-        error: (err: any) => {
+        error: (err: HttpErrorResponse) => {
           this.loadingAction.set(false);
           this.msg.add({
             severity: 'error',
@@ -133,7 +134,7 @@ export class UserRoleDialogComponent {
           });
           this.saved.emit();
         },
-        error: (err: any) => {
+        error: (err: HttpErrorResponse) => {
           this.loadingAction.set(false);
           this.msg.add({
             severity: 'error',
@@ -173,7 +174,7 @@ export class UserRoleDialogComponent {
           this.selectedUserId.set('');
           this.saved.emit();
         },
-        error: (err: any) => {
+        error: (err: HttpErrorResponse) => {
           this.loadingAction.set(false);
           this.msg.add({
             severity: 'error',
@@ -213,7 +214,7 @@ export class UserRoleDialogComponent {
           this.selectedUserId.set('');
           this.saved.emit();
         },
-        error: (err: any) => {
+        error: (err: HttpErrorResponse) => {
           this.loadingAction.set(false);
           this.msg.add({
             severity: 'error',

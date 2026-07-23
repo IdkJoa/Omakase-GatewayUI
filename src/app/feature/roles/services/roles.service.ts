@@ -22,6 +22,10 @@ export class RolesService {
     return this.http.delete<void>(`${this.rolesUrl}/${id}`);
   }
 
+  updateRole(id: string, role: { name: string; description?: string }): Observable<void> {
+    return this.http.put<void>(`${this.rolesUrl}/${id}`, role);
+  }
+
   getUsers(page: number = 1, pageSize: number = 100): Observable<PagedResponse<User>> {
     return this.http.get<PagedResponse<User>>(this.usersUrl, {
       params: { page: page.toString(), pageSize: pageSize.toString() }

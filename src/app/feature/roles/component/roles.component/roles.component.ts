@@ -5,7 +5,6 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { Button } from 'primeng/button';
 import { Checkbox } from 'primeng/checkbox';
 import { ConfirmDialog } from 'primeng/confirmdialog';
-import { Dialog } from 'primeng/dialog';
 import { Divider } from 'primeng/divider';
 import { InputText } from 'primeng/inputtext';
 import { Select } from 'primeng/select';
@@ -15,10 +14,11 @@ import { PopoverModule } from 'primeng/popover';
 import { Tooltip } from 'primeng/tooltip';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
-import { NgClass, DecimalPipe } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { forkJoin, Observable } from 'rxjs';
 import { Role, User } from '../../interfaces/roles.interface';
 import { RolesService } from '../../services/roles.service';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Column } from '../../../../shared/layout/interfaces/Columns';
 import { ROLES_COLUMN } from '../../data/data';
 import { buttonOptions } from '../../../../shared/Utils/buttonsOptions';
@@ -31,7 +31,6 @@ import { RolesFormComponent } from '../roles-form.component/roles-form.component
     Toast,
     ConfirmDialog,
     TableModule,
-    Dialog,
     Button,
     InputText,
     Select,
@@ -43,7 +42,6 @@ import { RolesFormComponent } from '../roles-form.component/roles-form.component
     IconField,
     InputIcon,
     NgClass,
-    DecimalPipe,
     RolesFormComponent
   ],
   providers: [MessageService, ConfirmationService],
@@ -135,7 +133,7 @@ export class RolesComponent implements OnInit {
           this.roles.set(data);
           this.loadingRoles.set(false);
         },
-        error: (err) => {
+        error: (err: HttpErrorResponse) => {
           this.loadingRoles.set(false);
           this.msg.add({
             severity: 'error',
@@ -155,7 +153,7 @@ export class RolesComponent implements OnInit {
           this.users.set(res.data);
           this.loadingUsers.set(false);
         },
-        error: (err) => {
+        error: (err: HttpErrorResponse) => {
           this.loadingUsers.set(false);
           this.msg.add({
             severity: 'error',
@@ -181,7 +179,7 @@ export class RolesComponent implements OnInit {
           this.selectedUserRoles.set(roleIds);
           this.initialUserRoles = [...roleIds];
         },
-        error: (err) => {
+        error: (err: HttpErrorResponse) => {
           this.msg.add({
             severity: 'error',
             summary: 'Error',
@@ -223,7 +221,7 @@ export class RolesComponent implements OnInit {
               });
               this.loadRoles();
             },
-            error: (err) => {
+            error: (err: HttpErrorResponse) => {
               this.msg.add({
                 severity: 'error',
                 summary: 'Error',
@@ -283,7 +281,7 @@ export class RolesComponent implements OnInit {
           this.initialUserRoles = [...current];
           this.loadRoles(); // Reload roles to update active counts
         },
-        error: (err) => {
+        error: (err: HttpErrorResponse) => {
           this.savingAssignments.set(false);
           this.msg.add({
             severity: 'error',

@@ -14,12 +14,7 @@ export interface User {
   roles: string[];
 }
 
-export interface PagedResponse<T> {
-  page: number;
-  pageSize: number;
-  totalRecords: number;
-  data: T[];
-}
+export type { PagedResponse } from '../../../shared/layout/interfaces/paged-response.interface';
 
 export interface RolesResponse {
   id:          string;
