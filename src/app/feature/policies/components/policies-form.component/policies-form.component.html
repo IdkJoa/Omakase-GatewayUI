@@ -8,10 +8,10 @@
   [style]="{ width: '700px' }"
   [breakpoints]="{ '960px': '90vw', '640px': '95vw' }"
 >
-  <form [formGroup]="FormPolicy" class="felx flex-col gap-4" (ngSubmit)="save()">
+  <form [formGroup]="FormPolicy" class="flex flex-col gap-4" (ngSubmit)="save()">
     <fieldset class="flex flex-col gap-4">
       <div class="flex flex-col gap-2">
-        <label for="name" class="block textsm font-medium mb-1"
+        <label for="name" class="block text-sm font-medium mb-1"
           >Name <span class="text-red-400 opacity-90">*</span></label
         >
         <input

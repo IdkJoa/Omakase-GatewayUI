@@ -20,3 +20,16 @@ export interface PagedResponse<T> {
   totalRecords: number;
   data: T[];
 }
+
+export interface RolesResponse {
+  id:          string;
+  name:        string;
+  description: string;
+  createdAt:   Date | string;
+  usersCount:  number;
+}
+
+export interface RoleAction {
+  name:        string;
+  description: string;
+}

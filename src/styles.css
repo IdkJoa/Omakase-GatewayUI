@@ -5,3 +5,29 @@
 td {
   height: 3rem;
 }
+
+/* Clase utilitaria para scrollbars oscuros */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;  /* Scrollbar vertical */
+  height: 6px; /* Scrollbar horizontal */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent; /* Mantiene el fondo limpio */
+  border-radius: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #2F2B43; /* Usa el color exacto de tus bordes */
+  border-radius: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #423D57; /* Se ilumina sutilmente al pasar el cursor */
+}
+
+/* Para Firefox (soporte estándar) */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #2F2B43 transparent;
+}

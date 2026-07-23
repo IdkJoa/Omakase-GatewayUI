@@ -9,4 +9,5 @@ export type paramsGrid = Record<string, string | number | boolean | readonly str
   to?: string;
   type?: string;
   isActive?: boolean;
+  userType?: string;
 }

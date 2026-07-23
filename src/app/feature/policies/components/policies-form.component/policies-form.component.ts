@@ -5,14 +5,13 @@ import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 import { MessageService, SharedModule } from 'primeng/api';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Toast } from 'primeng/toast';
 import { getConditionText } from '../../../../shared/Utils/function.datagrid';
 import { Button } from 'primeng/button';
 import { InputNumber } from 'primeng/inputnumber';
 
 @Component({
   selector: 'app-policies-form',
-  imports: [Dialog, InputNumber, ReactiveFormsModule, Toast, InputText, Button, SharedModule],
+  imports: [Dialog, InputNumber, ReactiveFormsModule,  InputText, Button, SharedModule],
   templateUrl: './policies-form.component.html',
   styleUrls: ['./policies-form.component.css'],
 })

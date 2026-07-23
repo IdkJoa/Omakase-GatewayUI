@@ -1,0 +1,181 @@
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MessageService } from 'primeng/api';
+import { Toast } from 'primeng/toast';
+import { Button } from 'primeng/button';
+import { Divider } from 'primeng/divider';
+import { DatePipe, DecimalPipe } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
+import { RiskConfigurationService } from '../../services/risk-configuration.service';
+import { RiskConfigurationRequest, RiskConfigurationResponse } from '../../interfaces/risk-configuration.interface';
+
+@Component({
+  selector: 'app-risk-configuration',
+  standalone: true,
+  imports: [
+    ReactiveFormsModule,
+    Toast,
+    Button,
+    Divider,
+    DatePipe,
+    DecimalPipe,
+  ],
+  providers: [MessageService],
+  templateUrl: './risk-configuration.component.html',
+  styleUrl: './risk-configuration.component.css',
+})
+export class RiskConfigurationComponent implements OnInit {
+  private readonly fb = inject(FormBuilder);
+  private readonly service = inject(RiskConfigurationService);
+  private readonly msg = inject(MessageService);
+  private readonly destroyRef = inject(DestroyRef);
+
+  public readonly loading = signal<boolean>(true);
+  public readonly saving = signal<boolean>(false);
+  public readonly configData = signal<RiskConfigurationResponse | null>(null);
+
+  private isUpdatingWeights = false;
+
+  public riskForm: FormGroup = this.fb.group({
+    policyWeight: [0.6, [Validators.required, Validators.min(0), Validators.max(1)]],
+    anomalyWeight: [0.4, [Validators.required, Validators.min(0), Validators.max(1)]],
+    coldStartPenalty: [30, [Validators.required, Validators.min(0)]],
+    coldStartN: [10, [Validators.required, Validators.min(0)]],
+    blockThreshold: [75, [Validators.required, Validators.min(0), Validators.max(100)]],
+    challengeThreshold: [50, [Validators.required, Validators.min(0), Validators.max(100)]],
+  });
+
+  ngOnInit(): void {
+    this.setupWeightSynchronization();
+    this.loadConfig();
+  }
+
+  private setupWeightSynchronization(): void {
+    const policyControl = this.riskForm.get('policyWeight');
+    const anomalyControl = this.riskForm.get('anomalyWeight');
+
+    policyControl?.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((val) => {
+        if (this.isUpdatingWeights || val === null || val === undefined) return;
+        this.isUpdatingWeights = true;
+        let numVal = Number(val);
+        if (isNaN(numVal)) numVal = 0;
+        numVal = Math.max(0, Math.min(1, numVal));
+        const counterpart = Math.round((1 - numVal) * 100) / 100;
+        anomalyControl?.setValue(counterpart, { emitEvent: false });
+        this.isUpdatingWeights = false;
+      });
+
+    anomalyControl?.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((val) => {
+        if (this.isUpdatingWeights || val === null || val === undefined) return;
+        this.isUpdatingWeights = true;
+        let numVal = Number(val);
+        if (isNaN(numVal)) numVal = 0;
+        numVal = Math.max(0, Math.min(1, numVal));
+        const counterpart = Math.round((1 - numVal) * 100) / 100;
+        policyControl?.setValue(counterpart, { emitEvent: false });
+        this.isUpdatingWeights = false;
+      });
+  }
+
+  loadConfig(): void {
+    this.loading.set(true);
+    this.service
+      .getRiskConfig()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => {
+          this.configData.set(data);
+          this.isUpdatingWeights = true;
+          this.riskForm.patchValue({
+            policyWeight: data.policyWeight,
+            anomalyWeight: data.anomalyWeight,
+            coldStartPenalty: data.coldStartPenalty,
+            coldStartN: data.coldStartN,
+            blockThreshold: data.blockThreshold,
+            challengeThreshold: data.challengeThreshold,
+          });
+          this.isUpdatingWeights = false;
+          this.loading.set(false);
+        },
+        error: (err) => {
+          this.loading.set(false);
+          this.msg.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: err?.error?.message || 'Error al cargar la configuración de riesgo.',
+          });
+        },
+      });
+  }
+
+  saveConfig(): void {
+    if (this.riskForm.invalid) {
+      this.riskForm.markAllAsTouched();
+      this.msg.add({
+        severity: 'warn',
+        summary: 'Formulario inválido',
+        detail: 'Por favor, revise los campos e intente de nuevo.',
+      });
+      return;
+    }
+
+    const payload: RiskConfigurationRequest = {
+      policyWeight: Number(this.riskForm.value.policyWeight),
+      anomalyWeight: Number(this.riskForm.value.anomalyWeight),
+      coldStartPenalty: Number(this.riskForm.value.coldStartPenalty),
+      coldStartN: Number(this.riskForm.value.coldStartN),
+      blockThreshold: Number(this.riskForm.value.blockThreshold),
+      challengeThreshold: Number(this.riskForm.value.challengeThreshold),
+    };
+
+    this.saving.set(true);
+    this.service
+      .updateRiskConfig(payload)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res) => {
+          this.saving.set(false);
+          this.configData.set(res);
+          this.msg.add({
+            severity: 'success',
+            summary: 'Configuración guardada',
+            detail: 'La configuración de riesgo se ha actualizado correctamente.',
+          });
+        },
+        error: (err) => {
+          this.saving.set(false);
+          this.msg.add({
+            severity: 'error',
+            summary: 'Error al guardar',
+            detail: err?.error?.message || 'Error al actualizar la configuración.',
+          });
+        },
+      });
+  }
+
+  resetForm(): void {
+    const data = this.configData();
+    if (data) {
+      this.isUpdatingWeights = true;
+      this.riskForm.patchValue({
+        policyWeight: data.policyWeight,
+        anomalyWeight: data.anomalyWeight,
+        coldStartPenalty: data.coldStartPenalty,
+        coldStartN: data.coldStartN,
+        blockThreshold: data.blockThreshold,
+        challengeThreshold: data.challengeThreshold,
+      });
+      this.isUpdatingWeights = false;
+      this.msg.add({
+        severity: 'info',
+        summary: 'Restablecido',
+        detail: 'Los valores han sido devueltos a la configuración actual.',
+      });
+    }
+  }
+}

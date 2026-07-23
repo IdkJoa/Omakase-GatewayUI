@@ -1,7 +1,191 @@
 <p-toast />
 
-<div class="flex items-center justify-between pt-6  pl-6 ml-6">
-  <h1 class="text-5xl font-bold opacity-80">Directorio de Usuarios</h1>
+<div class="flex items-center justify-between pt-6 pl-6 ml-6 pr-6">
+  <div>
+    <h1 class="text-5xl font-bold opacity-80">Directorio de Usuarios</h1>
+    <p class="text-muted-color mt-2.5 opacity-90 text-gray-400">
+      Consulta el listado, roles y estado de acceso de las cuentas registradas en el sistema.
+    </p>
+  </div>
 </div>
-<p class="text-muted-color mt-2.5 opacity-90 text-gray-400 pl-6 ml-6">Consulta el listado y el estado de las cuentas registradas en el sistema.</p>
 <p-divider class="bg-[#252233]! mb-6"></p-divider>
+
+<!-- Metric Summary Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-10 mb-8">
+  <!-- Card 1: Total Usuarios -->
+  <div
+    class="bg-[#1A1726] border border-[#2F2B43] rounded-xl p-5 flex items-center gap-5 hover:border-[#9D72FF]/40 hover:bg-[#232032] transition-all shadow-lg"
+  >
+    <div
+      class="bg-[#9D72FF]/10 border border-[#9D72FF]/20 w-12 h-12 rounded-lg flex items-center justify-center shrink-0"
+    >
+      <i class="pi pi-users text-[#9D72FF] text-xl"></i>
+    </div>
+    <div class="flex flex-col overflow-hidden">
+      <span class="text-[10px] text-[#9A96A8] font-bold uppercase tracking-widest mb-1"
+        >Total Usuarios</span
+      >
+      <span class="text-3xl font-black text-[#F3F3F6]">{{ totalUsersCount() }}</span>
+    </div>
+  </div>
+
+  <!-- Card 2: Usuarios Activos -->
+  <div
+    class="bg-[#1A1726] border border-[#2F2B43] rounded-xl p-5 flex items-center gap-5 hover:border-[#10B981]/40 hover:bg-[#232032] transition-all shadow-lg"
+  >
+    <div
+      class="bg-[#10B981]/10 border border-[#10B981]/20 w-12 h-12 rounded-lg flex items-center justify-center shrink-0"
+    >
+      <i class="pi pi-check-circle text-[#10B981] text-xl"></i>
+    </div>
+    <div class="flex flex-col overflow-hidden">
+      <span class="text-[10px] text-[#9A96A8] font-bold uppercase tracking-widest mb-1"
+        >Activos</span
+      >
+      <span class="text-3xl font-black text-[#10B981]">{{ activeUsersCount() }}</span>
+    </div>
+  </div>
+
+  <!-- Card 3: Usuarios Inactivos -->
+  <div
+    class="bg-[#1A1726] border border-[#2F2B43] rounded-xl p-5 flex items-center gap-5 hover:border-[#EF4444]/40 hover:bg-[#232032] transition-all shadow-lg"
+  >
+    <div
+      class="bg-[#EF4444]/10 border border-[#EF4444]/20 w-12 h-12 rounded-lg flex items-center justify-center shrink-0"
+    >
+      <i class="pi pi-times-circle text-[#EF4444] text-xl"></i>
+    </div>
+    <div class="flex flex-col overflow-hidden">
+      <span class="text-[10px] text-[#9A96A8] font-bold uppercase tracking-widest mb-1"
+        >Inactivos</span
+      >
+      <span class="text-3xl font-black text-[#EF4444]">{{ inactiveUsersCount() }}</span>
+    </div>
+  </div>
+
+  <!-- Card 4: Intentos Fallidos -->
+  <div
+    class="bg-[#1A1726] border border-[#2F2B43] rounded-xl p-5 flex items-center gap-5 hover:border-[#F59E0B]/40 hover:bg-[#232032] transition-all shadow-lg"
+  >
+    <div
+      class="bg-[#F59E0B]/10 border border-[#F59E0B]/20 w-12 h-12 rounded-lg flex items-center justify-center shrink-0"
+    >
+      <i class="pi pi-exclamation-triangle text-[#F59E0B] text-xl"></i>
+    </div>
+    <div class="flex flex-col overflow-hidden">
+      <span class="text-[10px] text-[#9A96A8] font-bold uppercase tracking-widest mb-1"
+        >Con intentos fallidos</span
+      >
+      <span class="text-3xl font-black text-[#F59E0B]">{{ failedAttemptsUsersCount() }}</span>
+    </div>
+  </div>
+</div>
+
+<div class="flex justify-center items-center w-full h-full pl-10 pr-10 mb-10">
+  <app-datagrid
+    class="w-full min-h-50"
+    [columns]="column"
+    [data]="data()"
+    [totalRecords]="totalRecords()"
+    [loading]="loading()"
+    [extraParams]="filterParams()"
+    [showActions]="false"
+    emptyMessage="No se encontraron usuarios con los criterios seleccionados."
+    (paramsGrid)="OnParamsGrid($event)"
+  >
+    <!-- Filtros -->
+    <div filters class="flex flex-wrap gap-8 mb-2 justify-end items-center w-full px-6 py-2">
+      <p-iconfield iconPosition="left" class="w-full sm:w-72">
+        <p-inputicon class="pi pi-search text-[#9a96a8]" />
+        <input
+          type="text"
+          pInputText
+          [ngModel]="userTypeFilter()"
+          (ngModelChange)="userTypeFilter.set($event)"
+          (keyup.enter)="onFilterChange()"
+          placeholder="Buscar por tipo de usuario... (Enter)"
+          class="w-78 bg-[#1a1726] border border-[#2f2b43] rounded-lg pl-9 pr-4 py-2 text-xs text-[#F3F3F6] focus:border-[#9D72FF] outline-none transition-colors"
+        />
+      </p-iconfield>
+
+      <select
+        [ngModel]="isActiveFilter()"
+        (ngModelChange)="isActiveFilter.set($event); onFilterChange()"
+        class="w-48 bg-[#1a1726] border border-[#2f2b43] rounded-lg px-3 py-2 text-xs text-[#F3F3F6] focus:border-[#9D72FF] outline-none cursor-pointer"
+      >
+        <option value="">Todos los estados</option>
+        <option value="true">Activo</option>
+        <option value="false">Inactivo</option>
+      </select>
+
+      @if (userTypeFilter() || isActiveFilter() !== '') {
+        <p-button
+          icon="pi pi-filter-slash"
+          (onClick)="limpiarFiltros()"
+          class="p-button-text"
+          pTooltip="Limpiar filtros"
+          tooltipPosition="top"
+        />
+      }
+    </div>
+
+    <!-- Row Template -->
+    <ng-template #bodyTemplate let-user>
+      <tr class="hover:bg-[#232032] transition-colors border-b border-[#2F2B43]/50 text-xs">
+        <td class="font-mono text-[11px] text-[#F3F3F6] pl-6 py-4 h-10 font-bold">
+          <div class="flex items-center gap-2.5">
+            <div class="bg-[#9D72FF]/10 text-[#9D72FF] p-1.5 rounded-md">
+              <i class="pi pi-user text-xs"></i>
+            </div>
+            <span>{{ user.username }}</span>
+          </div>
+        </td>
+        <td class="py-4 font-mono text-xs">
+          <span class="px-2.5 py-1 rounded-md bg-[#2F2B43] text-gray-300 text-[11px] font-semibold border border-[#2F2B43]">
+            {{ user.userType }}
+          </span>
+        </td>
+        <td class="py-4 font-bold">
+          <span
+            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold border"
+            [ngClass]="user.isActive ? 'bg-[#10B981]/10 text-[#10B981] border-[#10B981]/30' : 'bg-[#EF4444]/10 text-[#EF4444] border-[#EF4444]/30'"
+          >
+            <i [ngClass]="user.isActive ? 'pi pi-check-circle' : 'pi pi-times-circle'" class="text-[10px]"></i>
+            {{ user.isActive ? 'Activo' : 'Inactivo' }}
+          </span>
+        </td>
+        <td class="py-4 text-xs">
+          @if (user.roles && user.roles.length > 0) {
+            <div class="flex flex-wrap gap-1">
+              @for (r of user.roles; track r) {
+                <span class="px-2 py-0.5 rounded bg-[#9D72FF]/15 text-[#D8B4FE] text-[10px] border border-[#9D72FF]/30 font-medium">
+                  {{ r }}
+                </span>
+              }
+            </div>
+          } @else {
+            <span class="text-gray-500 italic text-[11px]">Sin roles</span>
+          }
+        </td>
+        <td class="py-4 text-xs font-mono">
+          <span
+            [ngClass]="user.failedAttempts > 0 ? 'bg-amber-500/10 text-amber-400 border-amber-500/30 font-bold px-2 py-0.5 rounded border' : 'text-gray-400'"
+          >
+            {{ user.failedAttempts }}
+          </span>
+        </td>
+        <td class="py-4 text-xs text-gray-400">
+          {{ user.behaviorProfile?.lastAccessAt ? (user.behaviorProfile.lastAccessAt | date: 'dd/MM/yyyy HH:mm') : 'Sin registros' }}
+        </td>
+      </tr>
+    </ng-template>
+  </app-datagrid>
+</div>
+
+<app-user-role-dialog
+  [visible]="showRoleDialog()"
+  (visibleChange)="showRoleDialog.set($event)"
+  [user]="selectedUser()"
+  (saved)="onRoleAssigned()"
+/>
+
