@@ -1,7 +1,210 @@
 <p-toast />
+<p-confirmDialog />
 
-<div class="flex items-center justify-between pt-6  pl-6 ml-6">
-  <h1 class="text-5xl font-bold opacity-80">Gestión de Roles y Permisos</h1>
+<div class="flex items-center justify-between mb-2">
+  <div class="flex flex-col items-left justify-center pt-6 pl-6 ml-6">
+    <h1 class="text-5xl font-bold opacity-80 text-white">Gestión de Roles y Permisos</h1>
+    <p class="text-muted-color mt-2.5 opacity-90 text-gray-400">Define roles del sistema y asigna privilegios de acceso para el control de acceso basado en roles (RBAC).</p>
+  </div>
 </div>
-<p class="text-muted-color mt-2.5 opacity-90 text-gray-400 pl-6 ml-6">Define y asigna los niveles de privilegios para el control de acceso de los usuarios.</p>
-<p-divider class="bg-[#252233]! mb-6"></p-divider>
+<p-divider class="bg-[#252233]! mb-6 ml-6 mr-6"></p-divider>
+
+<!-- Main Layout Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 px-6 ml-6 mr-6 mb-12">
+  
+  <!-- Left Side: Role Management Table -->
+  <div class="lg:col-span-7 bg-[#1A1726] border border-[#2F2B43] rounded-md shadow-xl p-5 flex flex-col justify-between">
+    <div>
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-semibold text-white">Catálogo de Roles</h2>
+        <p-button 
+          label="Nuevo Rol" 
+          icon="pi pi-plus" 
+          [style]="{ 'background-color': '#9d72ff', 'border': 'none' }"
+          class="text-white border-none text-sm font-semibold"
+          (onClick)="openCreateDialog()">
+        </p-button>
+      </div>
+
+      <p-table 
+        [value]="roles()" 
+        [loading]="loadingRoles()" 
+        class="p-datatable-custom"
+        [tableStyle]="{ 'min-width': '30rem' }">
+        <ng-template pTemplate="header">
+          <tr class="text-[10px] tracking-widest text-[#9A96A8] uppercase border-b border-[#2F2B43]/50">
+            <th style="width: 25%">Nombre</th>
+            <th style="width: 40%">Descripción</th>
+            <th style="width: 15%" class="text-center">Usuarios</th>
+            <th style="width: 10%" class="text-center">Acción</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-role>
+          <tr class="hover:bg-[#232032] transition-colors border-b border-[#2F2B43]/30 text-xs text-gray-300">
+            <td class="font-bold text-white py-3.5">{{ role.name }}</td>
+            <td>{{ role.description || 'Sin descripción' }}</td>
+            <td class="text-center">
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#2A263D] text-[#9D72FF] border border-[#9D72FF]/20">
+                {{ role.usersCount }}
+              </span>
+            </td>
+            <td class="text-center">
+              <button 
+                type="button"
+                class="p-link hover:scale-95 hover:cursor-pointer text-red-400 hover:text-red-500 disabled:opacity-40"
+                [disabled]="role.usersCount > 0"
+                [title]="role.usersCount > 0 ? 'No se puede eliminar un rol con usuarios asignados' : 'Eliminar rol'"
+                (click)="onDeleteRole(role)">
+                <i class="pi pi-trash"></i>
+              </button>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="4" class="text-center h-20 text-gray-400 italic">No hay roles registrados en el sistema.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+
+  <!-- Right Side: User Role Assignment -->
+  <div class="lg:col-span-5 bg-[#1A1726] border border-[#2F2B43] rounded-md shadow-xl p-5 flex flex-col justify-between">
+    <div>
+      <h2 class="text-lg font-semibold text-white mb-4">Asignación de Roles</h2>
+      
+      <!-- User Selector -->
+      <div class="flex flex-col gap-2 mb-6">
+        <label class="text-xs text-gray-400 font-bold uppercase tracking-wider">Seleccionar Usuario</label>
+        <p-select 
+          [options]="users()" 
+          [(ngModel)]="selectedUserId" 
+          optionLabel="username" 
+          optionValue="id" 
+          [filter]="true" 
+          filterBy="username"
+          placeholder="Seleccione un usuario..." 
+          class="w-full bg-[#1A1726]! border-[#2F2B43]!"
+          (onChange)="onUserSelect($event.value)">
+          <ng-template pTemplate="selectedItem" let-selectedOption>
+            @if (selectedOption) {
+              <div class="flex items-center justify-between w-full pr-4 text-xs text-white">
+                <span>{{ selectedOption.username }}</span>
+                <span class="text-[10px] text-gray-400 opacity-80">({{ selectedOption.userType }})</span>
+              </div>
+            }
+          </ng-template>
+          <ng-template pTemplate="item" let-option>
+            <div class="flex items-center justify-between w-full text-xs text-gray-200">
+              <span>{{ option.username }}</span>
+              <span class="text-[9px] px-1.5 py-0.5 rounded bg-[#2A263D] text-[#9D72FF]">{{ option.userType }}</span>
+            </div>
+          </ng-template>
+        </p-select>
+      </div>
+
+      <!-- Checkboxes listing all roles -->
+      @if (selectedUserId()) {
+        <div class="flex flex-col gap-3 mb-6">
+          <label class="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">Roles Disponibles</label>
+          
+          <div class="flex flex-col gap-3">
+            @for (role of roles(); track role.id) {
+              <div class="flex items-start gap-3 p-3 bg-[#232032]/40 border border-[#2F2B43]/50 rounded-md hover:bg-[#232032] transition-colors">
+                <p-checkbox 
+                  [value]="role.id" 
+                  [(ngModel)]="selectedUserRoles" 
+                  [inputId]="role.id">
+                </p-checkbox>
+                <div class="flex flex-col gap-0.5 hover:cursor-pointer">
+                  <label [for]="role.id" class="text-xs font-bold text-white hover:cursor-pointer">{{ role.name }}</label>
+                  <span class="text-[10px] text-gray-400">{{ role.description || 'Sin descripción' }}</span>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      } @else {
+        <div class="flex flex-col items-center justify-center h-48 border border-dashed border-[#2F2B43] rounded-md text-gray-500 italic text-xs gap-2">
+          <i class="pi pi-user text-lg"></i>
+          <span>Seleccione un usuario para ver y gestionar sus asignaciones.</span>
+        </div>
+      }
+    </div>
+
+    <!-- Save button at the bottom -->
+    @if (selectedUserId()) {
+      <div class="pt-4 border-t border-[#2F2B43]/50 flex justify-end">
+        <p-button 
+          label="Guardar Cambios" 
+          icon="pi pi-check" 
+          [style]="{ 'background-color': '#9d72ff', 'border': 'none' }"
+          [loading]="savingAssignments()"
+          class="text-white border-none font-bold"
+          (onClick)="saveAssignments()">
+        </p-button>
+      </div>
+    }
+  </div>
+
+</div>
+
+<!-- Create Role Dialog Form -->
+<p-dialog 
+  header="Crear Nuevo Rol" 
+  [(visible)]="showCreateDialog" 
+  [modal]="true" 
+  [style]="{ width: '400px' }" 
+  [draggable]="false" 
+  [resizable]="false"
+  class="p-dialog-custom">
+  <form [formGroup]="createRoleForm" (ngSubmit)="onCreateRole()" class="flex flex-col gap-4 mt-2">
+    
+    <div class="flex flex-col gap-1.5">
+      <label for="name" class="text-xs text-gray-300 font-semibold">Nombre del Rol</label>
+      <input 
+        pInputText 
+        id="name" 
+        formControlName="name" 
+        placeholder="ej. AUDITOR" 
+        class="w-full bg-[#1A1726] border-[#2F2B43] text-sm py-2 px-3 text-white" 
+        autocomplete="off" />
+      @if (createRoleForm.get('name')?.touched && createRoleForm.get('name')?.invalid) {
+        <span class="text-[10px] text-red-400">El nombre es requerido (mínimo 2 caracteres).</span>
+      }
+    </div>
+
+    <div class="flex flex-col gap-1.5">
+      <label for="description" class="text-xs text-gray-300 font-semibold">Descripción</label>
+      <input 
+        pInputText 
+        id="description" 
+        formControlName="description" 
+        placeholder="Describa el alcance de este rol..." 
+        class="w-full bg-[#1A1726] border-[#2F2B43] text-sm py-2 px-3 text-white" 
+        autocomplete="off" />
+      @if (createRoleForm.get('description')?.touched && createRoleForm.get('description')?.invalid) {
+        <span class="text-[10px] text-red-400">La descripción no puede exceder los 200 caracteres.</span>
+      }
+    </div>
+
+    <div class="flex justify-end gap-2 pt-2 border-t border-[#2F2B43]/50">
+      <p-button 
+        type="button" 
+        label="Cancelar" 
+        severity="secondary"
+        [text]="true"
+        (onClick)="showCreateDialog.set(false)">
+      </p-button>
+      <p-button 
+        type="submit" 
+        label="Crear" 
+        [style]="{ 'background-color': '#9d72ff', 'border': 'none' }"
+        class="text-white border-none"
+        [disabled]="createRoleForm.invalid">
+      </p-button>
+    </div>
+
+  </form>
+</p-dialog>
