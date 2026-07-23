@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -11,9 +11,19 @@ import { InputText } from 'primeng/inputtext';
 import { Select } from 'primeng/select';
 import { TableModule } from 'primeng/table';
 import { Toast } from 'primeng/toast';
+import { PopoverModule } from 'primeng/popover';
+import { Tooltip } from 'primeng/tooltip';
+import { IconField } from 'primeng/iconfield';
+import { InputIcon } from 'primeng/inputicon';
+import { NgClass, DecimalPipe } from '@angular/common';
 import { forkJoin, Observable } from 'rxjs';
 import { Role, User } from '../../interfaces/roles.interface';
 import { RolesService } from '../../services/roles.service';
+import { Column } from '../../../../shared/layout/interfaces/Columns';
+import { ROLES_COLUMN } from '../../data/data';
+import { buttonOptions } from '../../../../shared/Utils/buttonsOptions';
+import { RolesFormComponent } from '../roles-form.component/roles-form.component';
+
 @Component({
   selector: 'app-roles',
   imports: [
@@ -27,7 +37,14 @@ import { RolesService } from '../../services/roles.service';
     Select,
     Checkbox,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    PopoverModule,
+    Tooltip,
+    IconField,
+    InputIcon,
+    NgClass,
+    DecimalPipe,
+    RolesFormComponent
   ],
   providers: [MessageService, ConfirmationService],
   templateUrl: './roles.component.html',
@@ -46,19 +63,62 @@ export class RolesComponent implements OnInit {
   public readonly loadingRoles = signal<boolean>(false);
   public readonly loadingUsers = signal<boolean>(false);
 
-  // Dialog state
-  public readonly showCreateDialog = signal<boolean>(false);
+  // UI state from teammates
+  public readonly showActionDialog = signal<boolean>(false);
+  public readonly selectedRole = signal<Role | null>(null);
+  public readonly searchTerm = signal<string>('');
+  public readonly filterType = signal<'all' | 'with_users' | 'no_users'>('all');
+  public readonly viewMode = signal<'grid' | 'table'>('grid');
+  public readonly column: Column[] = ROLES_COLUMN;
 
-  // Assignment states
+  // Assignment states (HU-027)
   public selectedUserId = signal<string | null>(null);
   public selectedUserRoles = signal<string[]>([]); // Array of Role IDs assigned to selected user
   private initialUserRoles: string[] = []; // Cache to determine differences on save
   public readonly savingAssignments = signal<boolean>(false);
 
-  // Create role form
-  public readonly createRoleForm = this.fb.group({
-    name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
-    description: ['', [Validators.maxLength(200)]]
+  // Computed metrics based on the roles list
+  public readonly totalRoles = computed(() => this.roles().length);
+  public readonly totalAssignedUsers = computed(() =>
+    this.roles().reduce((acc, r) => acc + (r.usersCount || 0), 0)
+  );
+  public readonly rolesWithoutUsersCount = computed(() =>
+    this.roles().filter((r) => (r.usersCount || 0) === 0).length
+  );
+  public readonly mostPopularRole = computed(() => {
+    const list = this.roles();
+    if (!list.length) return { name: 'N/A', count: 0 };
+    const maxRole = list.reduce(
+      (max, r) => ((r.usersCount || 0) > (max.usersCount || 0) ? r : max),
+      list[0]
+    );
+    return {
+      name: (maxRole.usersCount || 0) > 0 ? maxRole.name : 'N/A',
+      count: maxRole.usersCount || 0,
+    };
+  });
+
+  // Filtered Roles List for display
+  public readonly filteredRoles = computed(() => {
+    let result = this.roles();
+
+    const term = this.searchTerm().toLowerCase().trim();
+    if (term) {
+      result = result.filter(
+        (r) =>
+          r.name.toLowerCase().includes(term) ||
+          (r.description && r.description.toLowerCase().includes(term))
+      );
+    }
+
+    const filter = this.filterType();
+    if (filter === 'with_users') {
+      result = result.filter((r) => (r.usersCount || 0) > 0);
+    } else if (filter === 'no_users') {
+      result = result.filter((r) => (r.usersCount || 0) === 0);
+    }
+
+    return result;
   });
 
   ngOnInit(): void {
@@ -131,42 +191,19 @@ export class RolesComponent implements OnInit {
       });
   }
 
-  openCreateDialog(): void {
-    this.createRoleForm.reset();
-    this.showCreateDialog.set(true);
+  limpiarFiltros(): void {
+    this.searchTerm.set('');
+    this.filterType.set('all');
   }
 
-  onCreateRole(): void {
-    if (this.createRoleForm.invalid) {
-      this.createRoleForm.markAllAsTouched();
-      return;
-    }
+  openCreate(): void {
+    this.selectedRole.set(null);
+    this.showActionDialog.set(true);
+  }
 
-    const payload = {
-      name: this.createRoleForm.value.name!,
-      description: this.createRoleForm.value.description || undefined
-    };
-
-    this.rolesService.createRole(payload)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => {
-          this.msg.add({
-            severity: 'success',
-            summary: 'Éxito',
-            detail: `Rol '${payload.name}' creado correctamente.`
-          });
-          this.showCreateDialog.set(false);
-          this.loadRoles();
-        },
-        error: (err) => {
-          this.msg.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: err.error?.message || 'Error al crear el rol.'
-          });
-        }
-      });
+  openEdit(role: Role): void {
+    this.selectedRole.set(role);
+    this.showActionDialog.set(true);
   }
 
   onDeleteRole(role: Role): void {
@@ -182,7 +219,7 @@ export class RolesComponent implements OnInit {
               this.msg.add({
                 severity: 'success',
                 summary: 'Éxito',
-                detail: `Rol '${role.name}' eliminado.`
+                detail: `Rol '${role.name}' eliminado correctamente.`
               });
               this.loadRoles();
             },
@@ -190,12 +227,16 @@ export class RolesComponent implements OnInit {
               this.msg.add({
                 severity: 'error',
                 summary: 'Error',
-                detail: err.error?.message || 'Error al eliminar el rol.'
+                detail: err.error?.message || 'Error al eliminar el rol. Verifique que no tenga usuarios asociados.'
               });
             }
           });
       }
     });
+  }
+
+  onRoleSaved(): void {
+    this.loadRoles();
   }
 
   saveAssignments(): void {
@@ -209,12 +250,12 @@ export class RolesComponent implements OnInit {
 
     const requests: Observable<void>[] = [];
 
-    // Asignar nuevos roles
+    // Assign new roles
     added.forEach(roleId => {
       requests.push(this.rolesService.assignRoleToUser(userId, roleId));
     });
 
-    // Revocar roles quitados
+    // Revoke removed roles
     removed.forEach(roleId => {
       requests.push(this.rolesService.revokeRoleFromUser(userId, roleId));
     });
@@ -240,7 +281,7 @@ export class RolesComponent implements OnInit {
           });
           this.savingAssignments.set(false);
           this.initialUserRoles = [...current];
-          this.loadRoles(); // Recargar roles para actualizar contadores de usuarios
+          this.loadRoles(); // Reload roles to update active counts
         },
         error: (err) => {
           this.savingAssignments.set(false);
