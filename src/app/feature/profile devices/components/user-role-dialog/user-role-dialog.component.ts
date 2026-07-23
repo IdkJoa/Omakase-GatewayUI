@@ -5,11 +5,12 @@ import { Tooltip } from 'primeng/tooltip';
 import { FormsModule } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { HttpErrorResponse } from '@angular/common/http';
 
-import { RolesService } from '../../../roles/services/roles.services';
+import { RolesService } from '../../../roles/services/roles.service';
 import { UserService } from '../../services/users.services';
 import { ProfileDevices } from '../../interfaces/profile-devices.interface';
-import { RolesResponse } from '../../../roles/interfaces/roles.interface';
+import { Role } from '../../../roles/interfaces/roles.interface';
 
 @Component({
   selector: 'app-user-role-dialog',
@@ -34,9 +35,9 @@ export class UserRoleDialogComponent {
   saved = output<void>();
 
   user = input<ProfileDevices | null>(null);
-  role = input<RolesResponse | null>(null);
+  role = input<Role | null>(null);
 
-  availableRoles = signal<RolesResponse[]>([]);
+  availableRoles = signal<Role[]>([]);
   availableUsers = signal<ProfileDevices[]>([]);
 
   selectedRoleId = signal<string>('');
@@ -52,7 +53,7 @@ export class UserRoleDialogComponent {
 
   loadRoles(): void {
     this.rolesService
-      .LoadRoles()
+      .getRoles()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (roles) => this.availableRoles.set(roles),
@@ -86,7 +87,7 @@ export class UserRoleDialogComponent {
 
     this.loadingAction.set(true);
     this.rolesService
-      .AssigmentRol(roleId, u.id)
+      .assignRoleToUser(u.id, roleId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
@@ -99,7 +100,7 @@ export class UserRoleDialogComponent {
           this.selectedRoleId.set('');
           this.saved.emit();
         },
-        error: (err) => {
+        error: (err: HttpErrorResponse) => {
           this.loadingAction.set(false);
           this.msg.add({
             severity: 'error',
@@ -121,7 +122,7 @@ export class UserRoleDialogComponent {
 
     this.loadingAction.set(true);
     this.rolesService
-      .UnassigmentRol(roleId, u.id)
+      .revokeRoleFromUser(u.id, roleId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
@@ -133,7 +134,7 @@ export class UserRoleDialogComponent {
           });
           this.saved.emit();
         },
-        error: (err) => {
+        error: (err: HttpErrorResponse) => {
           this.loadingAction.set(false);
           this.msg.add({
             severity: 'error',
@@ -160,7 +161,7 @@ export class UserRoleDialogComponent {
 
     this.loadingAction.set(true);
     this.rolesService
-      .AssigmentRol(r.id, userId)
+      .assignRoleToUser(userId, r.id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
@@ -173,7 +174,7 @@ export class UserRoleDialogComponent {
           this.selectedUserId.set('');
           this.saved.emit();
         },
-        error: (err) => {
+        error: (err: HttpErrorResponse) => {
           this.loadingAction.set(false);
           this.msg.add({
             severity: 'error',
@@ -200,7 +201,7 @@ export class UserRoleDialogComponent {
 
     this.loadingAction.set(true);
     this.rolesService
-      .UnassigmentRol(r.id, userId)
+      .revokeRoleFromUser(userId, r.id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
@@ -213,7 +214,7 @@ export class UserRoleDialogComponent {
           this.selectedUserId.set('');
           this.saved.emit();
         },
-        error: (err) => {
+        error: (err: HttpErrorResponse) => {
           this.loadingAction.set(false);
           this.msg.add({
             severity: 'error',
