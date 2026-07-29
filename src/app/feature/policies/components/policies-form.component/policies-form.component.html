@@ -8,16 +8,16 @@
   [style]="{ width: '700px' }"
   [breakpoints]="{ '960px': '90vw', '640px': '95vw' }"
 >
-  <form [formGroup]="FormPolicy" class="flex flex-col gap-4" (ngSubmit)="save()">
+  <form [formGroup]="FormPolicy" class="flex flex-col gap-4 pt-2" (ngSubmit)="save()">
     <fieldset class="flex flex-col gap-4">
       <div class="flex flex-col gap-2">
         <label for="name" class="block text-sm font-medium mb-1"
-          >Name <span class="text-red-400 opacity-90">*</span></label
+          >Nombre <span class="text-red-400 opacity-90">*</span></label
         >
         <input
           type="text"
-          [class.border-red-400!]="FormPolicy.get('name')?.invalid"
-          [class.border-emerald-400!]="FormPolicy.get('name')?.valid"
+          [class.border-red-400!]="FormPolicy.get('name')?.invalid && (FormPolicy.get('name')?.dirty || FormPolicy.get('name')?.touched)"
+          [class.border-emerald-400!]="FormPolicy.get('name')?.valid && (FormPolicy.get('name')?.dirty || FormPolicy.get('name')?.touched)"
           id="name"
           placeholder="Geofence - solo Rep. Dom."
           formControlName="name"
@@ -32,78 +32,89 @@
           </div>
         }
       </div>
-      <div class="flex flex-col gap-2">
-        <label for="type" class="block textsm font-medium mb-1"
-          >Tipo <span class="text-red-400 opacity-90">*</span></label
-        >
-        <input
-          type="text"
-          [class.border-red-400!]="FormPolicy.get('type')?.invalid"
-          [class.border-emerald-400!]="FormPolicy.get('type')?.valid"
-          id="type"
-          placeholder="Geofence"
-          formControlName="type"
-          pInputText
-        />
-        @if (
-          FormPolicy.get('type')?.invalid &&
-          (FormPolicy.get('type')?.dirty || FormPolicy.get('type')?.touched)
-        ) {
-          <div class="flex flex-col mt-0">
-            <p class="text-red-500 opacity-70 font-semibold text-xs">Este campo es requerido</p>
-          </div>
-        }
-      </div>
-    </fieldset>
 
-    <fieldset class="grid grid-cols-2 gap-4 mt-4">
+      <div class="grid grid-cols-2 gap-4">
+        <div class="flex flex-col gap-2">
+          <label for="type" class="block text-sm font-medium mb-1"
+            >Tipo <span class="text-red-400 opacity-90">*</span></label
+          >
+          <p-select
+            id="type"
+            [options]="policyTypeOptions"
+            optionLabel="label"
+            optionValue="value"
+            formControlName="type"
+            (onChange)="onTypeChange($event.value)"
+            placeholder="Seleccione un tipo"
+            styleClass="w-full"
+            class="w-full"
+          />
+          @if (
+            FormPolicy.get('type')?.invalid &&
+            (FormPolicy.get('type')?.dirty || FormPolicy.get('type')?.touched)
+          ) {
+            <div class="flex flex-col mt-0">
+              <p class="text-red-500 opacity-70 font-semibold text-xs">Este campo es requerido</p>
+            </div>
+          }
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label for="weight" class="block text-sm font-medium mb-1"
+            >Peso <span class="text-red-400 opacity-90">*</span></label
+          >
+          <p-inputNumber
+            inputId="weight"
+            mode="decimal"
+            placeholder="0.00"
+            [minFractionDigits]="0"
+            [maxFractionDigits]="2"
+            [inputStyleClass]="
+              FormPolicy.get('weight')?.invalid && (FormPolicy.get('weight')?.dirty || FormPolicy.get('weight')?.touched)
+                ? 'border-red-400!'
+                : FormPolicy.get('weight')?.valid && (FormPolicy.get('weight')?.dirty || FormPolicy.get('weight')?.touched)
+                  ? 'border-emerald-400!'
+                  : ''
+            "
+            formControlName="weight"
+          />
+          @if (
+            FormPolicy.get('weight')?.invalid &&
+            (FormPolicy.get('weight')?.dirty || FormPolicy.get('weight')?.touched)
+          ) {
+            <div class="flex flex-col mt-0">
+              <p class="text-red-500 opacity-70 font-semibold text-xs">Este campo es requerido</p>
+            </div>
+          }
+        </div>
+      </div>
+
       <div class="flex flex-col gap-2">
-        <label for="config" class="block textsm font-medium mb-1"
-          >Configuración <span class="text-red-400 opacity-90">*</span></label
+        <label for="config" class="block text-sm font-medium mb-1"
+          >Configuración (JSON) <span class="text-red-400 opacity-90">*</span></label
         >
-        <input
-          type="text"
-          [class.border-red-400!]="FormPolicy.get('config')?.invalid"
-          [class.border-emerald-400!]="FormPolicy.get('config')?.valid"
+        <textarea
           id="config"
-          placeholder="AllowedCountries: 'DO', 'US'"
+          rows="6"
           formControlName="config"
-          pInputText
-        />
+          pTextarea
+          [autoResize]="true"
+          placeholder='{ "allowedCountries": ["DO", "US"], "denied_countries": ["RU", "CN"] }'
+          class="w-full font-mono text-xs p-3 bg-[#1a1726] border border-[#2f2b43] rounded-md text-[#F3F3F6] focus:border-[#9D72FF] outline-none"
+          [class.border-red-400!]="FormPolicy.get('config')?.invalid && (FormPolicy.get('config')?.dirty || FormPolicy.get('config')?.touched)"
+          [class.border-emerald-400!]="FormPolicy.get('config')?.valid && (FormPolicy.get('config')?.dirty || FormPolicy.get('config')?.touched)"
+        ></textarea>
         @if (
           FormPolicy.get('config')?.invalid &&
           (FormPolicy.get('config')?.dirty || FormPolicy.get('config')?.touched)
         ) {
           <div class="flex flex-col mt-0">
-            <p class="text-red-500 opacity-70 font-semibold text-xs">Este campo es requerido</p>
-          </div>
-        }
-      </div>
-      <div class="flex flex-col gap-2">
-        <label for="weight" class="block textsm font-medium mb-1"
-          >Peso <span class="text-red-400 opacity-90">*</span></label
-        >
-        <p-inputNumber
-          inputId="weight"
-          mode="decimal"
-          placeholder="0.00"
-          [minFractionDigits]="0"
-          [maxFractionDigits]="2"
-          [inputStyleClass]="
-            FormPolicy.get('weight')?.invalid
-              ? 'border-red-400!'
-              : FormPolicy.get('weight')?.valid
-                ? 'border-emerald-400!'
-                : ''
-          "
-          formControlName="weight"
-        />
-        @if (
-          FormPolicy.get('weight')?.invalid &&
-          (FormPolicy.get('weight')?.dirty || FormPolicy.get('weight')?.touched)
-        ) {
-          <div class="flex flex-col mt-0">
-            <p class="text-red-500 opacity-70 font-semibold text-xs">Este campo es requerido</p>
+            @if (FormPolicy.get('config')?.errors?.['required']) {
+              <p class="text-red-500 opacity-70 font-semibold text-xs">Este campo es requerido</p>
+            }
+            @if (FormPolicy.get('config')?.errors?.['invalidJson']) {
+              <p class="text-red-500 opacity-70 font-semibold text-xs">La configuración debe ser un JSON válido</p>
+            }
           </div>
         }
       </div>
@@ -127,3 +138,4 @@
     </div>
   </ng-template>
 </p-dialog>
+
