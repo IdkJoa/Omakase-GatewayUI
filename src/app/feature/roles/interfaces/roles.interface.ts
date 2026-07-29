@@ -1,3 +1,22 @@
+import { PagedResponse } from "../../../shared/layout/interfaces/paged-response.interface";
+
+export interface Role {
+  id: string;
+  name: string;
+  description?: string;
+  createdAt: string;
+  usersCount: number;
+}
+
+export interface User {
+  id: string;
+  username: string;
+  userType: string;
+  isActive: boolean;
+  roles: string[];
+}
+
+
 export interface RolesResponse {
   id:          string;
   name:        string;
@@ -10,3 +29,5 @@ export interface RoleAction {
   name:        string;
   description: string;
 }
+
+export type PagedRoles = PagedResponse<RolesResponse>;
