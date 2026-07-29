@@ -1,3 +1,5 @@
+import { PagedResponse } from "../../../shared/layout/interfaces/paged-response.interface";
+
 export interface Role {
   id: string;
   name: string;
@@ -14,13 +16,12 @@ export interface User {
   roles: string[];
 }
 
-export type { PagedResponse } from '../../../shared/layout/interfaces/paged-response.interface';
 
 export interface RolesResponse {
   id:          string;
   name:        string;
   description: string;
-  createdAt:   Date | string;
+  createdAt:   Date;
   usersCount:  number;
 }
 
@@ -28,3 +29,5 @@ export interface RoleAction {
   name:        string;
   description: string;
 }
+
+export type PagedRoles = PagedResponse<RolesResponse>;

@@ -2,7 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment.development';
 import { Observable } from 'rxjs';
-import { Role, User, PagedResponse } from '../interfaces/roles.interface';
+import { Role, User } from '../interfaces/roles.interface';
+import { PagedResponse } from '../../../shared/layout/interfaces/paged-response.interface';
 
 @Injectable({ providedIn: 'root' })
 export class RolesService {

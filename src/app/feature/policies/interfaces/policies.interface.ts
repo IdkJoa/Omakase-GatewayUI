@@ -6,10 +6,43 @@ export interface PoliciesResponse {
   totalPages: number;
 }
 
+export type PolicyType = 'Geofence' | 'Timewindow' | 'Fingerprint' | 'impossibleTravel';
+
+export enum PolicyTypeEnum {
+  Geofence = 'Geofence',
+  Timewindow = 'Timewindow',
+  Fingerprint = 'Fingerprint',
+  ImpossibleTravel = 'impossibleTravel',
+}
+
+export interface PolicyTypeOption {
+  label: string;
+  value: PolicyType;
+}
+
+export const POLICY_TYPES: PolicyTypeOption[] = [
+  { label: 'Geofence', value: 'Geofence' },
+  { label: 'Timewindow', value: 'Timewindow' },
+  { label: 'Fingerprint', value: 'Fingerprint' },
+  { label: 'impossibleTravel', value: 'impossibleTravel' },
+];
+
+export interface Config {
+  allowedCountries?: string[];
+  denied_countries?: string[];
+  deniedCountries?: string[];
+  startHour?: number;
+  endHour?: number;
+  daysOfWeek?: number[];
+  maxSpeedKmh?: number;
+  maxDevicesPerSession?: number;
+  [key: string]: any;
+}
+
 export interface Policies {
   id: string;
   name: string;
-  type: string;
+  type: PolicyType | string;
   config: Config;
   weight: number;
   isActive: boolean;
@@ -18,21 +51,12 @@ export interface Policies {
   createdAt: Date;
 }
 
-export interface Config {
-  allowedCountries?: string[];
-  startHour?: number;
-  endHour?: number;
-  daysOfWeek?: number[];
-  maxSpeedKmh?: number;
-  maxDevicesPerSession?: number;
-}
-
-
 export interface PoliciesAction {
   name: string;
-  type: string;
-  config: string;
+  type: PolicyType | string;
+  config: Config | Record<string, any> | string;
   weight: number;
   isActive: boolean;
 }
+
 

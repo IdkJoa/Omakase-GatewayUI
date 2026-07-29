@@ -7,6 +7,7 @@ import { Dialog } from "primeng/dialog";
 import { InputText } from "primeng/inputtext";
 import { CheckboxModule } from 'primeng/checkbox';
 import { Button } from "primeng/button";
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-servicesform',
@@ -44,7 +45,10 @@ export class ServicesformComponent {
     const data = this.ServicesData();
 
     if(!data) {
-      this.FormService.reset();
+      this.FormService.reset({
+        requiresAuth: false,
+        isActive: false
+      });
       this.FormService.markAllAsTouched();
     }else{
       this.FormService.patchValue({
@@ -61,21 +65,48 @@ export class ServicesformComponent {
         this.FormService.markAllAsTouched();
         return;
       }
-      const policy = this.FormService.value as ServicesAction;
+      const services = this.FormService.value as ServicesAction;
       if (!this.isEditing) {
-        this.msg.add({
-          severity: 'success',
-          summary: 'Creado',
-          detail: 'Servicio creado con exito',
-        });
-        this.close();
+        this.service.CreateServices(services).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+           next: () => {
+              this.msg.add({
+                severity: 'success',
+                summary: 'Creado',
+                detail: 'Servicio creado con éxito',
+              });
+              this.saved.emit();
+              this.close();
+            },
+            error: (err) => {
+              this.msg.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: err.error?.message || 'Error al crear el servicio',
+              });
+            },
+          });
       } else {
-        this.msg.add({
-          severity: 'success',
-          summary: 'Actualizado',
-          detail: 'Servicio actualizado con exito',
-        });
-        this.close();
+        const id = this.ServicesData()!.id;
+        this.service.UpdateServices(services, id)
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe({
+            next: () => {
+              this.msg.add({
+                severity: 'success',
+                summary: 'Actualizado',
+                detail: 'Servicio actualizado con éxito',
+              });
+              this.saved.emit();
+              this.close();
+            },
+            error: (err) => {
+              this.msg.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: err.error?.message || 'Error al actualizar el servicio',
+              });
+            },
+          });
       }
     }
 

@@ -156,7 +156,7 @@
 
 <app-policies-form
   [visible]="showActionDialog()"
-  (save)="onPolicysaved()"
+  (saved)="onPolicysaved()"
   (visibleChange)="showActionDialog.set($event)"
   [PolicyData]="selectedPolicy()"
 />
