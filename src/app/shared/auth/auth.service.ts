@@ -38,6 +38,7 @@ export class AuthService {
   public initializeAuth(): Promise<void> {
     this.oauthService.configure(authConfig);
     this.oauthService.setupAutomaticSilentRefresh();
+    (window as any).oauthService = this.oauthService;
 
     return this.oauthService.loadDiscoveryDocumentAndLogin().then(() => {
       if (this.oauthService.hasValidAccessToken()) {
