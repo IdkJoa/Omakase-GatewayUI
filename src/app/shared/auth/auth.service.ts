@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AuthConfig, OAuthService } from 'angular-oauth2-oidc';
+import { AuthConfig, OAuthService, OAuthErrorEvent } from 'angular-oauth2-oidc';
 
 export const authConfig: AuthConfig = {
   //   // Url of the Identity Provider
@@ -38,6 +38,17 @@ export class AuthService {
   public initializeAuth(): Promise<void> {
     this.oauthService.configure(authConfig);
     this.oauthService.setupAutomaticSilentRefresh();
+    (window as any).oauthService = this.oauthService;
+
+    
+    this.oauthService.events.subscribe((event) => {
+      if (event instanceof OAuthErrorEvent) {
+        if (event.type === 'invalid_nonce_in_state' || event.type === 'token_error') {
+          console.warn('[Auth] Estado de sesión corrupto detectado. Limpiando y reiniciando...', event.type);
+          this.clearAndRestartFlow();
+        }
+      }
+    });
 
     return this.oauthService.loadDiscoveryDocumentAndLogin().then(() => {
       if (this.oauthService.hasValidAccessToken()) {
@@ -46,7 +57,28 @@ export class AuthService {
         console.log('Not logged in, initiating login...');
         this.oauthService.initCodeFlow();
       }
+    }).catch((error) => {
+      console.warn('[Auth] Error al cargar discovery document. Limpiando estado...', error);
+      this.clearAndRestartFlow();
     });
+  }
+
+  private clearAndRestartFlow(): void {
+    const keysToRemove = Object.keys(sessionStorage).filter(
+      (key) =>
+        key.startsWith('oidc.') ||
+        key.includes('access_token') ||
+        key.includes('id_token') ||
+        key.includes('nonce') ||
+        key.includes('state') ||
+        key.includes('PKCE')
+    );
+    keysToRemove.forEach((key) => sessionStorage.removeItem(key));
+
+    console.log('[Auth] sessionStorage limpiado. Redirigiendo a login...');
+    setTimeout(() => {
+      this.oauthService.initCodeFlow();
+    }, 100);
   }
 
   public get token() {
