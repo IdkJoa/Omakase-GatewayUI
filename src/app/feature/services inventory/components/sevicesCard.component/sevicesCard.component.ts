@@ -58,7 +58,7 @@ export class SevicesCardComponent {
     };
     this.loading.set(true);
     this.service
-      .LoadServices(params)
+      .loadServices(params)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {

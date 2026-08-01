@@ -92,10 +92,14 @@
           </span>
         </td>
         <td class="py-4 font-bold">
-          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs bg-[#9D72FF]/10 text-[#9D72FF] border border-[#9D72FF]/30">
+          <button 
+            type="button" 
+            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs bg-[#9D72FF]/10 text-[#9D72FF] border border-[#9D72FF]/30 hover:bg-[#9D72FF]/20 cursor-pointer transition-colors"
+            (click)="openPolicies(services)"
+          >
             <i class="pi pi-shield text-xs"></i>
             <span>{{ services.associatedPoliciesCount }} políticas</span>
-          </span>
+          </button>
         </td>
         <td class="py-4 text-center">
           <div class="flex justify-center pr-6">
@@ -139,3 +143,8 @@
   [ServicesData]="selectedServices()"
 />
 
+<app-service-policy-dialog
+  [visible]="showPolicyDialog()"
+  (visibleChange)="showPolicyDialog.set($event)"
+  [service]="selectedServices()"
+/>

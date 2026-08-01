@@ -17,6 +17,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatagridComponent } from '../../../../shared/components/datagrid.component/datagrid.component';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { ServicesformComponent } from '../servicesform.component/servicesform.component';
+import { ServicePolicyDialogComponent } from '../service-policy-dialog/service-policy-dialog.component';
 import { NgClass } from '@angular/common';
 
 @Component({
@@ -31,6 +32,7 @@ import { NgClass } from '@angular/common';
     DatagridComponent,
     ConfirmDialog,
     ServicesformComponent,
+    ServicePolicyDialogComponent,
     PopoverModule,
     FormsModule,
     NgClass,
@@ -52,6 +54,7 @@ export class ServicesInventoryComponent {
   public readonly params = signal<paramsGrid | null | undefined>(undefined);
   public readonly column: Column[] = Services_Columns;
   public readonly showActionDialog = signal<boolean>(false);
+  public readonly showPolicyDialog = signal<boolean>(false);
   public readonly selectedServices = signal<Services | null>(null);
   public readonly totalRecords = signal<number>(0);
   public readonly isEditMode = computed(() => this.selectedServices() !== null);
@@ -91,21 +94,26 @@ export class ServicesInventoryComponent {
 
   buttonsOptions: buttonOptions[] = [
     {
-      icon: 'pi pi-trash text-red-400 opacity-80',
-      action: (services: Services) => this.openDelete(services),
-      tooltip: 'Eliminar servicio',
+      icon: 'pi pi-shield text-purple-400 opacity-90',
+      action: (services: Services) => this.openPolicies(services),
+      tooltip: 'Gestionar Políticas de Acceso',
     },
     {
       icon: 'pi pi-pencil text-blue-400 opacity-80',
       action: (services: Services) => this.openEdit(services),
       tooltip: 'Editar servicio',
     },
+    {
+      icon: 'pi pi-trash text-red-400 opacity-80',
+      action: (services: Services) => this.openDelete(services),
+      tooltip: 'Eliminar servicio',
+    },
   ];
 
   loadServices() {
     this.loading.set(true);
     this.services
-      .LoadServices(this.params() ?? undefined)
+      .loadServices(this.params() ?? undefined)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
@@ -134,6 +142,11 @@ export class ServicesInventoryComponent {
     this.showActionDialog.set(true);
   }
 
+  openPolicies(services: Services) {
+    this.selectedServices.set(services);
+    this.showPolicyDialog.set(true);
+  }
+
   openDelete(services: Services) {
     this.confirmation.confirm({
       message: `¿Estas seguro de eliminar el servicio ${services.name}?`,
@@ -141,7 +154,7 @@ export class ServicesInventoryComponent {
       icon: 'pi pi-exclamation-triangle text-amber-400!',
 
       accept: () => {
-        this.services.DeleteServices(services.id).subscribe({
+        this.services.deleteServices(services.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
           next: () => {
             this.msg.add({
               severity: 'success',

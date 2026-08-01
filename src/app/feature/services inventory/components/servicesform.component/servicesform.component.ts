@@ -67,7 +67,7 @@ export class ServicesformComponent {
       }
       const services = this.FormService.value as ServicesAction;
       if (!this.isEditing) {
-        this.service.CreateServices(services).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+        this.service.createServices(services).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
            next: () => {
               this.msg.add({
                 severity: 'success',
@@ -87,7 +87,7 @@ export class ServicesformComponent {
           });
       } else {
         const id = this.ServicesData()!.id;
-        this.service.UpdateServices(services, id)
+        this.service.updateServices(services, id)
           .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe({
             next: () => {

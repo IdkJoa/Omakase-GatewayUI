@@ -106,7 +106,7 @@ export class PoliciesComponent {
   LoadPolicies() {
     this.loading.set(true);
     this.services
-      .LoadPolicies(this.params() ?? undefined)
+      .loadPolicies(this.params() ?? undefined)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
@@ -142,7 +142,7 @@ export class PoliciesComponent {
       icon: 'pi pi-exclamation-triangle text-amber-400!',
 
       accept: () => {
-        this.services.DeletePolicies(policies.id).subscribe({
+        this.services.deletePolicies(policies.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
           next: () => {
             this.msg.add({
               severity: 'success',
