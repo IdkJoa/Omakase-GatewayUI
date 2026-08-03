@@ -194,7 +194,8 @@
               severity="secondary"
               [outlined]="true"
               size="small"
-              pTooltip="Asignar / Desasignar Rol"
+              [disabled]="!authService.isAdmin"
+              [pTooltip]="!authService.isAdmin ? 'Solo los administradores pueden gestionar roles' : 'Asignar / Desasignar Rol'"
               tooltipPosition="top"
               (onClick)="selectedUser.set(user); showRoleDialog.set(true)"
             ></p-button>

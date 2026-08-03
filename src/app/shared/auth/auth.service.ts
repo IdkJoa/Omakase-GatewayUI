@@ -1,11 +1,6 @@
 import { authConfig } from './data/auth.data';
 import { Injectable } from '@angular/core';
-<<<<<<< Updated upstream
-import { AuthConfig, OAuthService, OAuthErrorEvent } from 'angular-oauth2-oidc';
-=======
-import { OAuthService } from 'angular-oauth2-oidc';
->>>>>>> Stashed changes
-
+import { OAuthService, OAuthErrorEvent } from 'angular-oauth2-oidc';
 
 @Injectable({
   providedIn: 'root',
@@ -16,9 +11,7 @@ export class AuthService {
   public initializeAuth(): Promise<void> {
     this.oauthService.configure(authConfig);
     this.oauthService.setupAutomaticSilentRefresh();
-    (window as any).oauthService = this.oauthService;
 
-    
     this.oauthService.events.subscribe((event) => {
       if (event instanceof OAuthErrorEvent) {
         if (event.type === 'invalid_nonce_in_state' || event.type === 'token_error') {
@@ -67,7 +60,54 @@ export class AuthService {
     return this.oauthService.getIdentityClaims();
   }
 
+  private get decodedAccessToken(): any {
+    const token = this.token;
+    if (!token) return null;
+    try {
+      const base64Url = token.split('.')[1];
+      if (!base64Url) return null;
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+      return JSON.parse(jsonPayload);
+    } catch {
+      return null;
+    }
+  }
+
+  public get userRoles(): string[] {
+    const idClaims = (this.identityClaims as any) || {};
+    const accessClaims = this.decodedAccessToken || {};
+
+    const idRoles: string[] = idClaims?.realm_access?.roles || [];
+    const accessRoles: string[] = accessClaims?.realm_access?.roles || [];
+
+    const resourceAccess = accessClaims?.resource_access || idClaims?.resource_access || {};
+    const clientRoles: string[] = Object.values(resourceAccess).flatMap(
+      (client: any) => client?.roles || []
+    );
+
+    const allRoles = [...idRoles, ...accessRoles, ...clientRoles];
+    return Array.from(new Set(allRoles.map((r: string) => r.toUpperCase())));
+  }
+
   public logout() {
     this.oauthService.logOut();
+  }
+
+  public hasRole(role: string): boolean {
+    return this.userRoles.includes(role.toUpperCase());
+  }
+
+  public get isAdmin(): boolean {
+    return this.hasRole('ADMIN');
+  }
+
+  public get isViewer(): boolean {
+    return this.hasRole('VIEWER') || !this.isAdmin;
   }
 }

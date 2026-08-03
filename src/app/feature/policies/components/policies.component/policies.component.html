@@ -12,11 +12,12 @@
 
   <p-button
     tooltipPosition="left"
-    pTooltip="Crear política"
+    [pTooltip]="!authService.isAdmin ? 'Solo los administradores pueden crear políticas' : 'Crear política'"
+    [disabled]="!authService.isAdmin"
     label="Nueva Política"
     icon="pi pi-plus"
     class="text-white border-none text-sm font-semibold px-4 py-2"
-    [style]="{ 'background-color': '#9d72ff' }"
+    [style]="{ 'background-color': authService.isAdmin ? '#9d72ff' : '#4b465c' }"
     (onClick)="openCreate()"
   ></p-button>
 </div>
@@ -143,10 +144,11 @@
   <div class="flex gap-4">
     @for (item of buttonsOptions; track $index) {
       <button
-        class="p-link hover:scale-95 hover:cursor-pointer"
-        [pTooltip]="item.tooltip || ''"
+        class="p-link hover:scale-95 hover:cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+        [disabled]="!authService.isAdmin"
+        [pTooltip]="!authService.isAdmin ? 'Solo los administradores pueden realizar esta acción' : (item.tooltip || '')"
         tooltipPosition="top"
-        (click)="item.action(selectedPolicy())"
+        (click)="authService.isAdmin && item.action(selectedPolicy())"
       >
         <i [class]="item.icon"></i>
       </button>

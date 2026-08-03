@@ -20,6 +20,7 @@ import { DatagridComponent } from '../../../../shared/components/datagrid.compon
 import { UserRoleDialogComponent } from '../user-role-dialog/user-role-dialog.component';
 import { UserProfilePanelComponent } from '../user-profile-panel/user-profile-panel.component';
 import { buttonOptions } from '../../../../shared/Utils/buttonsOptions';
+import { AuthService } from '../../../../shared/auth/auth.service';
 
 @Component({
   selector: 'app-profile-devices.component',
@@ -44,6 +45,7 @@ import { buttonOptions } from '../../../../shared/Utils/buttonsOptions';
   styleUrl: './profile-devices.component.css',
 })
 export class ProfileDevicesComponent {
+  public readonly authService = inject(AuthService);
   private readonly msg = inject(MessageService);
   private readonly services = inject(UserService);
   private readonly destroyRef = inject(DestroyRef);

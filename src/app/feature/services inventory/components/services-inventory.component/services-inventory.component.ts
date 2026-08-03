@@ -19,6 +19,7 @@ import { ConfirmDialog } from 'primeng/confirmdialog';
 import { ServicesformComponent } from '../servicesform.component/servicesform.component';
 import { ServicePolicyDialogComponent } from '../service-policy-dialog/service-policy-dialog.component';
 import { NgClass } from '@angular/common';
+import { AuthService } from '../../../../shared/auth/auth.service';
 
 @Component({
   selector: 'app-services-inventory.component',
@@ -34,14 +35,14 @@ import { NgClass } from '@angular/common';
     ServicesformComponent,
     ServicePolicyDialogComponent,
     PopoverModule,
-    FormsModule,
-    NgClass,
+    FormsModule, 
   ],
   providers: [MessageService, ConfirmationService],
   templateUrl: './services-inventory.component.html',
   styleUrl: './services-inventory.component.css',
 })
 export class ServicesInventoryComponent {
+  public readonly authService = inject(AuthService);
   private readonly msg = inject(MessageService);
   private readonly confirmation = inject(ConfirmationService);
   private readonly services = inject(ServiceProtectedService);

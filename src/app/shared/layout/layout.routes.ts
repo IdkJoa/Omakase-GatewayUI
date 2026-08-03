@@ -49,7 +49,7 @@ export const LayoutRoutes: Routes = [
           import('../../feature/roles/component/roles.component/roles.component').then(
             (m) => m.RolesComponent,
           ),
-        canActivate: [roleGuard(['admin', 'security-lead'])]
+        canActivate: [roleGuard(['ADMIN'])]
       },
       {
         path: 'risk-configuration',
@@ -57,6 +57,7 @@ export const LayoutRoutes: Routes = [
           import('../../feature/risk configuration/components/risk-configuration.component/risk-configuration.component').then(
             (m) => m.RiskConfigurationComponent,
           ),
+          canActivate: [roleGuard(['ADMIN'])]
       },
       {
         path: '**',

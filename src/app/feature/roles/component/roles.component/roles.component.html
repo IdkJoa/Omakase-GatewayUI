@@ -11,11 +11,12 @@
   </div>
 
   <p-button
-    pTooltip="Crear nuevo rol de usuario"
+    [pTooltip]="!authService.isAdmin ? 'Solo los administradores pueden crear roles' : 'Crear nuevo rol de usuario'"
+    [disabled]="!authService.isAdmin"
     label="Nuevo rol"
     icon="pi pi-plus"
     class="text-white border-none text-sm font-semibold px-4 py-2 mr-6"
-    [style]="{ 'background-color': '#9d72ff', 'border': 'none' }"
+    [style]="{ 'background-color': authService.isAdmin ? '#9d72ff' : '#4b465c', 'border': 'none' }"
     (onClick)="openCreate()"
   />
 </div>
@@ -266,22 +267,22 @@
               <div class="pt-3 border-t border-[#2F2B43]/70 flex items-center justify-end gap-2">
                 <button
                   type="button"
-                  pTooltip="Editar rol"
+                  [disabled]="!authService.isAdmin"
+                  [pTooltip]="!authService.isAdmin ? 'Solo los administradores pueden editar roles' : 'Editar rol'"
                   tooltipPosition="top"
-                  (click)="openEdit(role)"
-                  class="p-1.5 text-gray-400 hover:text-blue-400 hover:bg-[#232032] rounded-lg transition-colors cursor-pointer"
+                  (click)="authService.isAdmin && openEdit(role)"
+                  class="p-1.5 text-gray-400 hover:text-blue-400 hover:bg-[#232032] rounded-lg transition-colors cursor-pointer disabled:opacity-30 disabled:hover:bg-transparent disabled:cursor-not-allowed"
                 >
                   <i class="pi pi-pencil text-xs"></i>
                 </button>
 
                 <button
                   type="button"
-                  pTooltip="Eliminar rol"
+                  [pTooltip]="!authService.isAdmin ? 'Solo los administradores pueden eliminar roles' : (role.usersCount > 0 ? 'No se puede eliminar un rol con usuarios asignados' : 'Eliminar rol')"
                   tooltipPosition="top"
-                  [disabled]="role.usersCount > 0"
-                  [title]="role.usersCount > 0 ? 'No se puede eliminar un rol con usuarios asignados' : 'Eliminar rol'"
-                  (click)="onDeleteRole(role)"
-                  class="p-1.5 text-gray-400 hover:text-red-400 hover:bg-[#232032] rounded-lg transition-colors cursor-pointer disabled:opacity-30 disabled:hover:bg-transparent"
+                  [disabled]="!authService.isAdmin || role.usersCount > 0"
+                  (click)="authService.isAdmin && onDeleteRole(role)"
+                  class="p-1.5 text-gray-400 hover:text-red-400 hover:bg-[#232032] rounded-lg transition-colors cursor-pointer disabled:opacity-30 disabled:hover:bg-transparent disabled:cursor-not-allowed"
                 >
                   <i class="pi pi-trash text-xs"></i>
                 </button>
@@ -319,18 +320,21 @@
                   <div class="flex justify-center gap-2">
                     <button
                       type="button"
-                      (click)="openEdit(role)"
-                      class="p-link text-blue-400 hover:text-blue-500"
-                      title="Editar rol"
+                      [disabled]="!authService.isAdmin"
+                      (click)="authService.isAdmin && openEdit(role)"
+                      class="p-link text-blue-400 hover:text-blue-500 disabled:opacity-30 disabled:cursor-not-allowed"
+                      [pTooltip]="!authService.isAdmin ? 'Solo los administradores pueden editar roles' : 'Editar rol'"
+                      tooltipPosition="top"
                     >
                       <i class="pi pi-pencil"></i>
                     </button>
                     <button
                       type="button"
-                      [disabled]="role.usersCount > 0"
-                      (click)="onDeleteRole(role)"
-                      class="p-link text-red-400 hover:text-red-500 disabled:opacity-30"
-                      [title]="role.usersCount > 0 ? 'No se puede eliminar un rol con usuarios asignados' : 'Eliminar rol'"
+                      [disabled]="!authService.isAdmin || role.usersCount > 0"
+                      (click)="authService.isAdmin && onDeleteRole(role)"
+                      class="p-link text-red-400 hover:text-red-500 disabled:opacity-30 disabled:cursor-not-allowed"
+                      [pTooltip]="!authService.isAdmin ? 'Solo los administradores pueden eliminar roles' : (role.usersCount > 0 ? 'No se puede eliminar un rol con usuarios asignados' : 'Eliminar rol')"
+                      tooltipPosition="top"
                     >
                       <i class="pi pi-trash"></i>
                     </button>

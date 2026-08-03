@@ -23,6 +23,7 @@ import { Column } from '../../../../shared/layout/interfaces/Columns';
 import { ROLES_COLUMN } from '../../data/data';
 import { buttonOptions } from '../../../../shared/Utils/buttonsOptions';
 import { RolesFormComponent } from '../roles-form.component/roles-form.component';
+import { AuthService } from '../../../../shared/auth/auth.service';
 
 @Component({
   selector: 'app-roles',
@@ -49,6 +50,7 @@ import { RolesFormComponent } from '../roles-form.component/roles-form.component
   styleUrl: './roles.component.css',
 })
 export class RolesComponent implements OnInit {
+  public readonly authService = inject(AuthService);
   private readonly fb = inject(FormBuilder);
   private readonly msg = inject(MessageService);
   private readonly confirmation = inject(ConfirmationService);

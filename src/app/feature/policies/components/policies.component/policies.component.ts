@@ -22,6 +22,7 @@ import { DatagridComponent } from '../../../../shared/components/datagrid.compon
 import { buttonOptions } from '../../../../shared/Utils/buttonsOptions';
 import { PoliciesFormComponent } from '../policies-form.component/policies-form.component';
 import { getConditionText } from '../../../../shared/Utils/function.datagrid';
+import { AuthService } from '../../../../shared/auth/auth.service';
 
 @Component({
   selector: 'app-policies.component',
@@ -46,6 +47,7 @@ import { getConditionText } from '../../../../shared/Utils/function.datagrid';
   styleUrl: './policies.component.css',
 })
 export class PoliciesComponent {
+  public readonly authService = inject(AuthService);
   private readonly msg = inject(MessageService);
   private readonly confirmation = inject(ConfirmationService);
   private readonly services = inject(PoliciesService);
