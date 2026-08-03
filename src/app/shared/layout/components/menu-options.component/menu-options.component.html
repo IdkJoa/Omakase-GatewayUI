@@ -1,5 +1,5 @@
 <ul class="p-5 pt-3 pl-0 pr-0.5 ">
-  @for (item of routes; track item.path) {
+  @for (item of routes(); track item.path) {
   <li  [routerLink]="item.path" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
     class=" text-sm font-bold h-10 flex cursor-pointer  items-center hover:bg-[#2B3746] pl-2 ">
     <i [class]="item.icon" class="ml-3 mr-3 text-[#7b52ab]"></i>

@@ -4,7 +4,7 @@
   <div>
     <h1 class="text-5xl font-bold opacity-80">Directorio de Usuarios</h1>
     <p class="text-muted-color mt-2.5 opacity-90 text-gray-400">
-      Consulta el listado, roles y estado de acceso de las cuentas registradas en el sistema.
+      Consulta el listado, roles, perfil de comportamiento y estado de acceso de las cuentas registradas en el sistema.
     </p>
   </div>
 </div>
@@ -89,7 +89,8 @@
     [totalRecords]="totalRecords()"
     [loading]="loading()"
     [extraParams]="filterParams()"
-    [showActions]="false"
+    [showActions]="true"
+    actionsHeader="ACCIONES"
     emptyMessage="No se encontraron usuarios con los criterios seleccionados."
     (paramsGrid)="OnParamsGrid($event)"
   >
@@ -177,6 +178,29 @@
         <td class="py-4 text-xs text-gray-400">
           {{ user.behaviorProfile?.lastAccessAt ? (user.behaviorProfile.lastAccessAt | date: 'dd/MM/yyyy HH:mm') : 'Sin registros' }}
         </td>
+        <td class="py-4 text-center">
+          <div class="flex justify-center gap-2 pr-6">
+            <p-button
+              icon="pi pi-id-card"
+              severity="info"
+              [outlined]="true"
+              size="small"
+              pTooltip="Ver Perfil, Accesos y MFA"
+              tooltipPosition="top"
+              (onClick)="selectedUser.set(user); showProfilePanel.set(true)"
+            ></p-button>
+            <p-button
+              icon="pi pi-user-edit"
+              severity="secondary"
+              [outlined]="true"
+              size="small"
+              [disabled]="!authService.isAdmin"
+              [pTooltip]="!authService.isAdmin ? 'Solo los administradores pueden gestionar roles' : 'Asignar / Desasignar Rol'"
+              tooltipPosition="top"
+              (onClick)="selectedUser.set(user); showRoleDialog.set(true)"
+            ></p-button>
+          </div>
+        </td>
       </tr>
     </ng-template>
   </app-datagrid>
@@ -189,3 +213,8 @@
   (saved)="onRoleAssigned()"
 />
 
+<app-user-profile-panel
+  [visible]="showProfilePanel()"
+  (visibleChange)="showProfilePanel.set($event)"
+  [user]="selectedUser()"
+/>

@@ -11,19 +11,9 @@ import { getConditionText } from '../../../../shared/Utils/function.datagrid';
 import { Button } from 'primeng/button';
 import { InputNumber } from 'primeng/inputnumber';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { jsonValidator } from '../../../../shared/Utils/function-form';
 
-export function jsonValidator(control: AbstractControl): ValidationErrors | null {
-  if (!control.value) return null;
-  try {
-    const parsed = typeof control.value === 'object' ? control.value : JSON.parse(control.value);
-    if (typeof parsed !== 'object' || parsed === null) {
-      return { invalidJson: true };
-    }
-    return null;
-  } catch {
-    return { invalidJson: true };
-  }
-}
+
 
 @Component({
   selector: 'app-policies-form',
@@ -150,7 +140,7 @@ export class PoliciesFormComponent {
     console.log({ payload });
     if (!this.isEditing) {
       this.service
-        .CreatePolicies(payload)
+        .createPolicies(payload)
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
@@ -173,7 +163,7 @@ export class PoliciesFormComponent {
     } else {
       const id = this.PolicyData()!.id;
       this.service
-        .UpdatePolicies(payload, id)
+        .updatePolicies(payload, id)
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
