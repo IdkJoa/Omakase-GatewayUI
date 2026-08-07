@@ -1,4 +1,11 @@
-export const routes = [
+export interface MenuRoute {
+  path: string;
+  title: string;
+  icon: string;
+  roles?: string[];
+}
+
+export const routes: MenuRoute[] = [
   {
     path: "dashboard",
     title: "Dashboard",
@@ -17,7 +24,8 @@ export const routes = [
   {
     path: "roles",
     title: "Roles",
-    icon: "pi pi-crown"
+    icon: "pi pi-crown",
+    roles: ["ADMIN"]
   },
   {
     path: "profile-devices",
@@ -32,7 +40,7 @@ export const routes = [
   {
     path: "risk-configuration",
     title: "Risk Configuration",
-    icon: "pi pi-sliders-h"
+    icon: "pi pi-sliders-h",
+    roles: ["ADMIN"]
   },
-]
-
+];

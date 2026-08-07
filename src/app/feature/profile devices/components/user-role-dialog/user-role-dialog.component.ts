@@ -57,7 +57,13 @@ export class UserRoleDialogComponent {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (roles) => this.availableRoles.set(roles),
-        error: () => {},
+        error: () => {
+          this.msg.add({
+            severity: "error",
+            summary: "Error",
+            detail: "No se pudieron cargar los roles disponibles."
+          })
+        },
       });
   }
 

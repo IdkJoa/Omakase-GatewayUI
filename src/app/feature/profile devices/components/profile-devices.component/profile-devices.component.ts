@@ -18,7 +18,9 @@ import { Column } from '../../../../shared/layout/interfaces/Columns';
 import { paramsGrid } from '../../../../shared/layout/interfaces/ParamsGrid';
 import { DatagridComponent } from '../../../../shared/components/datagrid.component/datagrid.component';
 import { UserRoleDialogComponent } from '../user-role-dialog/user-role-dialog.component';
+import { UserProfilePanelComponent } from '../user-profile-panel/user-profile-panel.component';
 import { buttonOptions } from '../../../../shared/Utils/buttonsOptions';
+import { AuthService } from '../../../../shared/auth/auth.service';
 
 @Component({
   selector: 'app-profile-devices.component',
@@ -28,6 +30,7 @@ import { buttonOptions } from '../../../../shared/Utils/buttonsOptions';
     Toast,
     DatagridComponent,
     UserRoleDialogComponent,
+    UserProfilePanelComponent,
     IconField,
     InputIcon,
     InputText,
@@ -42,6 +45,7 @@ import { buttonOptions } from '../../../../shared/Utils/buttonsOptions';
   styleUrl: './profile-devices.component.css',
 })
 export class ProfileDevicesComponent {
+  public readonly authService = inject(AuthService);
   private readonly msg = inject(MessageService);
   private readonly services = inject(UserService);
   private readonly destroyRef = inject(DestroyRef);
@@ -55,6 +59,7 @@ export class ProfileDevicesComponent {
   public readonly column: Column[] = column;
   public readonly showActionDialog = signal<boolean>(false);
   public readonly showRoleDialog = signal<boolean>(false);
+  public readonly showProfilePanel = signal<boolean>(false);
   public readonly selectedUser = signal<ProfileDevices | null>(null);
 
   // Filtros
@@ -97,7 +102,15 @@ export class ProfileDevicesComponent {
 
   public readonly buttonsOptions: buttonOptions[] = [
     {
-      icon: 'pi pi-[#9D72FF] pi-user-edit text-[#9D72FF] opacity-90',
+      icon: 'pi pi-user text-sky-400 opacity-90',
+      tooltip: 'Ver Perfil, Accesos y MFA',
+      action: (user: ProfileDevices) => {
+        this.selectedUser.set(user);
+        this.showProfilePanel.set(true);
+      },
+    },
+    {
+      icon: 'pi pi-user-edit text-[#9D72FF] opacity-90',
       tooltip: 'Asignar / Desasignar Rol',
       action: (user: ProfileDevices) => {
         this.selectedUser.set(user);

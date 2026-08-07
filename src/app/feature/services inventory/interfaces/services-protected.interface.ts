@@ -22,3 +22,20 @@ export interface ServicesAction {
   requiresAuth: boolean;
   isActive: boolean;
 }
+
+export type PolicyType = 'Geofence' | 'TimeWindow' | 'Fingerprint' | 'ImpossibleTravel';
+
+export interface ServicePolicyDto {
+  id: string;
+  policyId: string;
+  policyName: string;
+  policyType: PolicyType;
+  weight: number;
+  isEnabled: boolean;
+  policyIsActive: boolean;
+}
+
+export interface AssociatePolicyRequest {
+  policyId: string;
+  isEnabled?: boolean;
+}

@@ -12,8 +12,8 @@ import { NgTemplateOutlet, CommonModule } from '@angular/common';
   templateUrl: './datagrid.component.html',
   styleUrl: './datagrid.component.css',
 })
-export class DatagridComponent {
-  public readonly data = input<any[]>([]);
+export class DatagridComponent<T  = Record<string, unknown>> {
+  public readonly data = input<T[]>([]);
   public readonly totalRecords = input<number>(0);
   public readonly loading = input<boolean>(false);
   public readonly columns = input.required<Column[]>();
@@ -28,7 +28,7 @@ export class DatagridComponent {
   public readonly actionsWidth = input<string>('5%');
   public readonly emptyMessage = input<string>('No se encontraron registros.');
   public readonly tableStyle = input<Record<string, string>>({ 'min-width': '50rem' });
-  public readonly extraParams = input<Record<string, any>>({});
+  public readonly extraParams = input<Record<string, unknown>>({});
 
   public readonly paramsGrid = output<paramsGrid>();
   public readonly lazyLoad = output<TableLazyLoadEvent>();
