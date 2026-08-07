@@ -12,7 +12,8 @@ export const roleGuard = (allowedRoles: string[]): CanActivateFn => {
       if (hasPermission) {
         return true;
       }
-      router.navigate(['/dashboard']);
+      router.navigate(['/dashboard']); 
+      
       return false;
     }
 
