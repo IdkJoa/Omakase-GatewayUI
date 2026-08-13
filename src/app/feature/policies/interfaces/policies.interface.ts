@@ -29,9 +29,15 @@ export const POLICY_TYPES: PolicyTypeOption[] = [
 
 export interface Config {
   allowed_countries?: string[];
+  allowedCountries?: string[];
   denied_countries?: string[];
   start_time?: string;
   end_time?: string;
+  startHour?: number;
+  endHour?: number;
+  daysOfWeek?: any[];
+  maxSpeedKmh?: number;
+  maxDevicesPerSession?: number;
   timezone?: string;
   [key: string]: any;
 }
