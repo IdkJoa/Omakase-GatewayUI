@@ -99,7 +99,7 @@
           formControlName="config"
           pTextarea
           [autoResize]="true"
-          placeholder='{ "allowedCountries": ["DO", "US"], "denied_countries": ["RU", "CN"] }'
+           placeholder='{ "allowed_countries": ["DO", "US"], "denied_countries": ["RU", "CN"] }'
           class="w-full font-mono text-xs p-3 bg-[#1a1726] border border-[#2f2b43] rounded-md text-[#F3F3F6] focus:border-[#9D72FF] outline-none"
           [class.border-red-400!]="FormPolicy.get('config')?.invalid && (FormPolicy.get('config')?.dirty || FormPolicy.get('config')?.touched)"
           [class.border-emerald-400!]="FormPolicy.get('config')?.valid && (FormPolicy.get('config')?.dirty || FormPolicy.get('config')?.touched)"
