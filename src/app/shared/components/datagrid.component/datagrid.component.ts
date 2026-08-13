@@ -35,6 +35,7 @@ export class DatagridComponent<T  = Record<string, unknown>> {
 
   public readonly bodyTemplate = contentChild<TemplateRef<any>>('bodyTemplate');
 
+  public firstRow = 0;
   private currentPage = 1;
   private currentLimit = 20;
 
@@ -52,6 +53,7 @@ export class DatagridComponent<T  = Record<string, unknown>> {
 
   onFilterChange() {
     this.currentPage = 1;
+    this.firstRow = 0;
     this.emitParamsGrid();
   }
 

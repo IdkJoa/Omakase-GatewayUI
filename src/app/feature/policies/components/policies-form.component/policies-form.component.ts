@@ -35,11 +35,11 @@ export class PoliciesFormComponent {
   readonly policyTypeOptions: PolicyTypeOption[] = POLICY_TYPES;
 
   readonly defaultConfigs: Record<string, string> = {
-    Geofence: JSON.stringify({ allowedCountries: ['DO', 'US'], denied_countries: ['RU', 'CN'] }, null, 2),
-    Timewindow: JSON.stringify({ startHour: 8, endHour: 18, daysOfWeek: [1, 2, 3, 4, 5] }, null, 2),
-    Fingerprint: JSON.stringify({ maxDevicesPerSession: 3 }, null, 2),
-    impossibleTravel: JSON.stringify({ maxSpeedKmh: 800 }, null, 2),
-  };
+      Geofence: JSON.stringify({ allowed_countries: ['DO', 'US'], denied_countries: ['RU', 'CN'] }, null, 2),
+      Timewindow: JSON.stringify({ start_time: '08:00', end_time: '18:00', timezone: 'America/Santo_Domingo' }, null, 2),
+      Fingerprint: JSON.stringify({}, null, 2),
+      impossibleTravel: JSON.stringify({}, null, 2),
+    };
 
   get isEditing(): boolean {
     return this.PolicyData() !== null;

@@ -28,14 +28,11 @@ export const POLICY_TYPES: PolicyTypeOption[] = [
 ];
 
 export interface Config {
-  allowedCountries?: string[];
+  allowed_countries?: string[];
   denied_countries?: string[];
-  deniedCountries?: string[];
-  startHour?: number;
-  endHour?: number;
-  daysOfWeek?: number[];
-  maxSpeedKmh?: number;
-  maxDevicesPerSession?: number;
+  start_time?: string;
+  end_time?: string;
+  timezone?: string;
   [key: string]: any;
 }
 
@@ -58,5 +55,3 @@ export interface PoliciesAction {
   weight: number;
   isActive: boolean;
 }
-
-
